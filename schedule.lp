@@ -36,14 +36,20 @@ distance(
     9,10, "0.68";
     10,11, "1.31";
     11,12, "0.82";
-    13,14, "1.24";
-    14,15, "1.6";
-    15,16, "1.11";
-    16,17,"4.82";
-    17,18,"1.6";).
+    12,13, "1.24";
+    13,14, "1.6";
+    14,15, "1.11";
+    15,16,"4.82";
+    16,17,"1.6";
+    17,18,"1.78";).
 
-forward(0..17, 1..18).
-forward(1..18, 0..17).
+
+distance(S2, S1, D) :- distance(S1, S2, D).
+%#show distance/3.
+
+% Each manually specified distance corresponds to variable
+% fixed at that value
+
 
 %% Participants
 participant(0..6).
@@ -73,7 +79,8 @@ preferred_distance(
     2, "6.0";
     3, "6.0";
     4, "5.0";
-    5, "5.0").
+    5, "5.0";
+    6, "7.0").
 
 
 %%% Sequence
@@ -89,18 +96,39 @@ error("Leg not continous", T) :- leg(T, S1, S2), leg(T + 1, S3, S4), S2 != S3.
 %#show leg/3.
 
 
+%%% Generate
 
 1{
-    run(X,leg(A,B,C)): participant(X)
+    run_leg(X,leg(A,B,C)): participant(X)
 }1 :- leg(A,B,C).
+%#show run_leg/2.
 
-
-&sum{D:distance(B, C, D), run(X, leg(A,B,C))} < 10 :- participant(X).
-
-
-%%%%%%%%%%%%%%%%%%%%%%% Instance
-
-
+% Who runs what index
+run(X,T) :- run_leg(X, leg(T,_,_)).
 #show run/2.
+
+%%% Plan metrics
+leg_count(X, C) :- C = #count{run(X, T): run(X, T), participant(X)}, participant(X).
+#show leg_count/2.
+:- leg_count(X, 0), participant(X).
+
+leg_dist(T, D) :- leg(T, S1, S2), distance(S1, S2, D).
+%#show leg_dist/2.
+
+total_dist(X, T) :- T = #sum{D: distance(S1, S2, D), run_leg(X,leg(_,S1,S2)), participant(X)}, participant(X).
+#show total_dist/2.
+
+deviation(X, |G - T|) :- total_dist(X, T), preferred_distance(X, G), participant(X).
+%#show deviation/2.
+
+
+%%% Objectives
+
+% Make people run the distance they want to run
+#minimize {D: deviation(X, D), participant(X)}.
+
+
+
 #show error/2.
 #show error/3.
+
