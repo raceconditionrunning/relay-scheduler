@@ -32,7 +32,7 @@ def main(prg):
 
     with ProgramBuilder(prg) as b:
         parse_files(
-        ["schedule.lp"],
+        ["schedule.lp", "map.lp", "preferences.lp"],
         lambda stm: b.add(t.visit(stm)))
         prg.ground([("base", [])])
     prg.solve()
