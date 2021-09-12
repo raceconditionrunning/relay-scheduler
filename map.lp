@@ -1,5 +1,3 @@
-%% Stations
-
 s_name(
     0, "Northgate";
     1, "Roosevelt";
@@ -20,7 +18,7 @@ s_name(
     16, "Tukwila International Blvd";
     17, "SeaTac/Airport";
     18, "Angle Lake";
-     ).
+).
 
 station(X) :- s_name(X, _).     
 
@@ -42,11 +40,10 @@ distance(
     14,15, "1.11";
     15,16,"6.46";
     16,17,"1.6";
-    17,18,"1.78";).
+    17,18,"1.78";
+).
 
 distance(S2, S1, D) :- distance(S1, S2, D).
-%#show distance/3.
-
 
 climbing(
     0,1, 205; 1,0, 189;
@@ -67,4 +64,4 @@ climbing(
     15,16, 950; 16,15, 690;
     16,17, 128; 17,16, 105;
     17,18, 105; 18,17, 47
-    ).
+).
