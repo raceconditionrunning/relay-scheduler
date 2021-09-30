@@ -74,7 +74,9 @@ preference(
     "Vishwas",      3,  "1.0",  "20.0";
     %"Reshabh",      2,  "0.5",  "10.0";
     "Reshabh",      2,  "0.5",  "12.0";
-    "Brett",        2,  "3.0",  "9.5"
+    "Brett",        2,  "3.0",  "9.5";
+    "Suneja",       11,  "2.0",  "12.84";
+    "Pratyush",     2,   "2.0", "10.0";
 ).
 
 % Designated as responsible for their legs

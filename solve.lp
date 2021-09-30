@@ -98,8 +98,7 @@ def print_model(model):
     runner_names = sorted(assignments.keys())
     for runner in runner_names:
         start, end = assignments[runner]
-
-        print(f"{runner}: {start} -> {end} - {total_dist[runner]} mi")
+        print(f"{runner}: {start} -> {end} - {total_dist[runner]:.1f} mi")
 
 
     for runner in runner_names:
@@ -119,7 +118,7 @@ def print_model(model):
         pace_pretty = f"{pace // 1:0.0f}:{(pace % 1.0) * 60:02.0f}"
         offset_pretty = f"{(start_offset / 60) // 1:0.0f}:{(start_offset % 60) // 1:02.0f}:{(start_offset % 1.0) * 60:02.0f}"
         dist = leg_dist[leg_num]
-        print(f"{leg_num} T+{offset_pretty} {start_name} -> {end_name}: {dist}mi@{pace_pretty} {sorted(on_leg[leg_num])}")
+        print(f"{leg_num} T+{offset_pretty} {start_name} -> {end_name}: {dist:.1f}mi@{pace_pretty} {sorted(on_leg[leg_num])}")
         leg_duration = pace * dist
 
         start_offset += math.ceil(exchange_overhead + leg_duration)
