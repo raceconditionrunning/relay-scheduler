@@ -41,6 +41,8 @@ def print_model(model):
     individual_end_dev = {}
     leg_dist = {}
     total_dist = {}
+    climbing = {}
+    leg_climbing = {}
     for symbol in model.symbols(atoms=True):
         if symbol.name == "leg_coverage":
             leg_num, coverage = symbol.arguments
@@ -94,11 +96,13 @@ def print_model(model):
         elif symbol.name == "total_dist":
             name, dist = symbol.arguments
             total_dist[name.string] = dist.number / 100.0
-
+        elif symbol.name == "total_climbing":
+            name, climbing_number = symbol.arguments
+            climbing[name.string] = climbing_number.number
+        elif symbol.name == "leg_climbing":
+            leg, climbing_number = symbol.arguments
+            leg_climbing[leg.number] = climbing_number.number
     runner_names = sorted(assignments.keys())
-    for runner in runner_names:
-        start, end = assignments[runner]
-        print(f"{runner}: {start} -> {end} - {total_dist[runner]:.1f} mi")
 
 
     for runner in runner_names:
@@ -106,21 +110,32 @@ def print_model(model):
 
         print(f"{runner}: {individual_dist_dev[runner]} mi, {pace_dev}, {individual_end_dev[runner]} stations")
 
+    print("---")
+    for runner in runner_names:
+        start, end = assignments[runner]
+        print(f"{runner}: {start} -> {end} - {total_dist[runner]:.1f} mi ({climbing[runner]} ft)")
+
+    print("---")
 
     leg_keys = sorted(leg_paces.keys())
     start_offset = 0.0
-    exchange_overhead = 3.5
+    exchange_overhead = 4.0
+
     for leg_num in leg_keys:
         station_start, station_end = leg_start[leg_num], leg_end[leg_num]
         start_name = station_names[station_start]
         end_name = station_names[station_end]
         pace = leg_paces[leg_num]
         pace_pretty = f"{pace // 1:0.0f}:{(pace % 1.0) * 60:02.0f}"
-        offset_pretty = f"{(start_offset / 60) // 1:0.0f}:{(start_offset % 60) // 1:02.0f}:{(start_offset % 1.0) * 60:02.0f}"
+        real_time = start_offset + 570
+        offset_pretty = f"{(start_offset / 60) // 1:0.0f}:{(start_offset % 60) // 1:02.0f}"
+        real_time_pretty = f"{(real_time / 60) // 1:0.0f}:{(real_time % 60) // 1:02.0f}"
         dist = leg_dist[leg_num]
-        print(f"{leg_num} T+{offset_pretty} {start_name} -> {end_name}: {dist:.1f}mi@{pace_pretty} {sorted(on_leg[leg_num])}")
+        leg_c = leg_climbing[leg_num]
+        leg_participants = ', '.join(sorted(on_leg[leg_num]))
+        print(f"{leg_num} T+{offset_pretty} {start_name} {dist:.1f} @{pace_pretty} {leg_c} {leg_participants}")
         leg_duration = pace * dist
-
+        print(real_time_pretty)
         start_offset += math.ceil(exchange_overhead + leg_duration)
         # print(pace, dist, leg_duration, start_offset)
     offset_pretty = f"{(start_offset / 60) // 1:0.0f}:{(start_offset % 60) // 1:02.0f}:{(start_offset % 1.0) * 60:02.0f}"
