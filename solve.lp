@@ -1,7 +1,7 @@
 #script (python)
 
 import clingo
-import clingo.ast
+import clingo.ast as ast
 from clingo.symbol import String, Number
 from clingo.ast import ProgramBuilder, parse_files, Transformer
 from collections import defaultdict
@@ -14,11 +14,11 @@ class TermTransformer(Transformer):
     def visit_Function(self, node):
         new_args = []
         for arg in node.arguments:
-            if arg.ast_type == clingo.ast.ASTType.SymbolicTerm and arg.symbol.type == clingo.SymbolType.String:
+            if arg.ast_type == ast.ASTType.SymbolicTerm and arg.symbol.type == clingo.SymbolType.String:
                 try:
                     as_float = float(arg.symbol.string)
                     as_int = int(as_float * 100.0)
-                    new_args.append(clingo.ast.SymbolicTerm(node.location, Number(as_int)))
+                    new_args.append(ast.SymbolicTerm(node.location, Number(as_int)))
                 except ValueError:
                     new_args.append(arg)
             else:
@@ -41,8 +41,8 @@ def print_model(model):
     individual_end_dev = {}
     leg_dist = {}
     total_dist = {}
-    climbing = {}
-    leg_climbing = {}
+    ascent = {}
+    leg_ascent = {}
     for symbol in model.symbols(atoms=True):
         if symbol.name == "leg_coverage":
             leg_num, coverage = symbol.arguments
@@ -96,12 +96,12 @@ def print_model(model):
         elif symbol.name == "total_dist":
             name, dist = symbol.arguments
             total_dist[name.string] = dist.number / 100.0
-        elif symbol.name == "total_climbing":
-            name, climbing_number = symbol.arguments
-            climbing[name.string] = climbing_number.number
-        elif symbol.name == "leg_climbing":
-            leg, climbing_number = symbol.arguments
-            leg_climbing[leg.number] = climbing_number.number
+        elif symbol.name == "total_ascent":
+            name, ascent_number = symbol.arguments
+            ascent[name.string] = ascent_number.number
+        elif symbol.name == "leg_ascent":
+            leg, ascent_number = symbol.arguments
+            leg_ascent[leg.number] = ascent_number.number
     runner_names = sorted(assignments.keys())
 
 
@@ -113,7 +113,7 @@ def print_model(model):
     print("---")
     for runner in runner_names:
         start, end = assignments[runner]
-        print(f"{runner}: {start} -> {end} - {total_dist[runner]:.1f} mi ({climbing[runner]} ft)")
+        print(f"{runner}: {start} -> {end} - {total_dist[runner]:.1f} mi ({ascent[runner]} ft)")
 
     print("---")
 
@@ -131,9 +131,9 @@ def print_model(model):
         offset_pretty = f"{(start_offset / 60) // 1:0.0f}:{(start_offset % 60) // 1:02.0f}"
         real_time_pretty = f"{(real_time / 60) // 1:0.0f}:{(real_time % 60) // 1:02.0f}"
         dist = leg_dist[leg_num]
-        leg_c = leg_climbing[leg_num]
+        leg_a = leg_ascent[leg_num]
         leg_participants = ', '.join(sorted(on_leg[leg_num]))
-        print(f"{leg_num} T+{offset_pretty} {start_name} {dist:.1f} @{pace_pretty} {leg_c} {leg_participants}")
+        print(f"{leg_num} T+{offset_pretty} {start_name} {dist:.1f} @{pace_pretty} {leg_a} {leg_participants}")
         leg_duration = pace * dist
         print(real_time_pretty)
         start_offset += math.ceil(exchange_overhead + leg_duration)
@@ -146,7 +146,7 @@ def main(prg):
 
     with ProgramBuilder(prg) as b:
         parse_files(
-        ["scheduling-domain.lp", "lrr-2021.lp", "link-1-line.lp", "pin-legs.lp"],
+        ["scheduling-domain.lp", "2022/lrr.lp", "2022/link-1-line.lp", "2022/pin-legs.lp"],
         lambda stm: b.add(t.visit(stm)))
         prg.ground([("base", [])])
     prg.solve(on_model=print_model)

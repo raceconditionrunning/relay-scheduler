@@ -39,11 +39,11 @@ lead_count(T, C) :- C = #count{run(X, T): run(X, T), participant(X), lead(X)}, l
 
 leg_dist(T, D) :- leg(T, S1, S2), distance(S1, S2, D).
 
-leg_climbing(T, Climb) :- leg(T, S1, S2), climbing(S1, S2, Climb).
+leg_ascent(T, Climb) :- leg(T, S1, S2), ascent(S1, S2, Climb).
 
 total_dist(X, Total) :- Total = #sum{Distance: leg_dist(T,Distance), run(X,T), leg_time(T)}, participant(X).
 
-total_climbing(X, Total) :- Total = #sum{Climb: leg_climbing(T,Climb), run(X,T), leg_time(T)}, participant(X).
+total_ascent(X, Total) :- Total = #sum{Climb: leg_ascent(T,Climb), run(X,T), leg_time(T)}, participant(X).
 
 dist_diff(X, Actual - Preferred) :- total_dist(X, Actual), preferred_distance(X, Preferred), participant(X).
 dist_deviation(X, |Diff|) :- dist_diff(X, Diff).

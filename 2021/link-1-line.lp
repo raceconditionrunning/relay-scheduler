@@ -20,7 +20,7 @@ s_name(
     18, "Angle Lake"
 ).
 
-station(X) :- s_name(X, _).     
+station(X) :- s_name(X, _).
 
 distance(
     0,1, "2.40";
@@ -46,7 +46,7 @@ distance(
 
 distance(S2, S1, D) :- distance(S1, S2, D).
 
-climbing(
+ascent(
     0,1, 236; 1,0, 261;
     1,2, 68; 2,1, 111;
     2,3, 48; 3,2, 161;
