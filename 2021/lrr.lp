@@ -1,102 +1,133 @@
 % Format: From Angle Lake to Northgate
-leg(T - 18, 18 - (T - 18), 18 - (T - 17)) :- T=18..35.
+leg(T, T, T + 1) :- T=0..17.
 
-%%% Event constraints
+% We are only going to assign people to one of these ranges.
+legRange(StartTime, StopTime) :- StartTime < StopTime, legTime(StartTime), legTime(StopTime).
 
-:- leg_count(X, 0), participant(X).
-:- C != 2, exchange_count(X, C), participant(X).
-:- C < 1, lead_count(T, C), leg_time(T).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Event constraints
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% People are assigned one segment. Although we generate only solutions that obey this, still need this
+% constraint for when legs are manually pinned.
+:- C != 2, exchangeCount(P, C), participant(P).
+
+% Atleast 2 people on each leg
+:- C < 2, legCoverage(T, C), leg(T, _, _).
+
 % Group safety in downtown
-:- C < 3, leg_coverage(T, C), leg(T, X, _), s_name(X, ("Pioneer Square";"International District/Chinatown";"University Street";"Westlake")).
+:- C < 3, legCoverage(T, C), leg(T, StartTime, _), exchangeName(StartTime, ("Pioneer Square";"International District/Chinatown";"University Street";"Westlake")).
 
+% Exactly one leader assigned per leg
+:- not 1{leaderOn(X, T)}1, legTime(T).
 
-%%% Generate
+% Prefer that leaders don't begin leading on their first exchange
+:~ startExchange(X, LeadStartExchange), leaderAssignmentRange(X, legRange(LeadStartExchange, EndExchange)). [ 1@0 , X]
 
-% All combinations of paricipants running each leg
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Generate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Assign each participant to a range of legs
 1{
-   run_leg(X, leg(A,B,C)): participant(X)
-}Count :- leg(A,B,C), participants(Count).
+   assignmentRange(X, legRange(Start, Stop)): legRange(Start, Stop)
+}1 :- participant(X).
 
+assignment(X, leg(T, StartExchange, EndExchange)) :- leg(T, StartExchange, EndExchange), StartTime <= T, T <= StopTime, assignmentRange(X, legRange(StartTime, StopTime)).
 
-%%% Optimization Criteria
+% If a leader candidate is assigned to a leg, optionally generate a (one contiguous block) leadership assignment from
+% within their segment.
+0{
+    leaderAssignmentRange(X, legRange(StartLead, EndLead)): StartLead=StartExchange..EndExchange, EndLead=StartExchange..EndExchange, StartLead < EndLead
+}1 :- willingToLead(X), assignmentRange(X, legRange(StartExchange, EndExchange)).
+
+leaderAssignment(X, leg(T, StartExchange, EndExchange)) :- leg(T, StartExchange, EndExchange), StartTime <= T, T <= StopTime, leaderAssignmentRange(X, legRange(StartTime, StopTime)).
+
+leaderOn(X, T) :- leaderAssignment(X, leg(T, _, _)).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Optimization objectives
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Priority between objectives is lexicographic, largest number to lowest
 
 % Try not to go too far over people's stated limits
-#minimize {D @ 3: dist_overage(X, D), participant(X)}.
+#minimize {D @ 4, X: distOverage(X, D), participant(X)}.
 
 % Make people run the distance they want to run
-#minimize {D @ 2: dist_deviation(X, D), participant(X)}.
+#minimize {D @ 3, X: distDeviation(X, D), participant(X)}.
 
-#minimize {EndDeviation @ 1: end_deviation(X, EndDeviation), participant(X)}.
+#minimize {EndDeviation @ 2, X: endDeviation(X, EndDeviation), participant(X)}.
 
-#minimize {Duration @ 0: duration(T, Duration), leg_time(T)}.
+#minimize {Duration @ 1, T: duration(T, Duration), legTime(T)}.
 
-%%% Alternative criteria
+% Provide a key
+objective(
+    4,"dist overage";
+    3,"dist";
+    2,"commute";
+    1,"duration";
+    0,"leader early start"
+).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Alternative objectives
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Make people run the pace they want to run
-% #minimize {D @ 4: pace_deviation(X, T, D), participant(X), leg_time(T)}.
-%:- Slack > 1000, pace_slack(X, T, Slack).
+% #minimize {D @ 4: paceDeviation(X, T, D), participant(X), legTime(T)}.
+%:- Slack > 1000, paceSlack(X, T, Slack).
 
 % Just get within half a mile for everyone
-%:- Deviation > 50, dist_diff(X, Deviation).
+%:- Deviation > 50, distDiff(X, Deviation).
 
-% Print a key
-objectives("dist overage","dist","commute", "duration").
-#show objectives/4.
-
-
-%%% Participant Preferences
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Preferences
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 preference(
 %   Name           End  Dist    Pace
-    "Yuxuan",       3,  "5.0",  "11.33";
-    "James",        4,  "3.0",  "9.0";
-    "Jennifer",     16, "3.0",  "10.0";
-    "Chandra",      0,  "10.0", "10.0";
-    "Ellis",        4,  "10.0", "7.5";
-    "Nick",         2,  "9.9",  "8.0";
-    "Zach",         13, "6.0",  "10.5";
-    "Max",          5,  "3.0",  "9.5";
-    "Swati",        2,  "6.2",  "12.0";
-    "Sidd",         1,  "5.0",  "11.0";
-    "Amal",         1,  "5.0",  "10.0";
-    "Maya",         0,  "5.0",  "10.0";
-    "Ethan",        4,  "7.0",  "8.5";
-    "Sameer",       2,  "3.0",  "9.5";
-    "Edward",       2,  "4.0",  "10.0";
-    "Ewin",         1,  "7.0",  "9.0";
-    %"Jamie",        2,  "10.0", "8.0";
-    "Jamie",        2,  "7.0", "8.0";
-    "Johanna",      3,  "6.21", "8.0";
-    %"Jingwei",      1,  "2.0",  "11.86";
-    "Jingwei",      1,  "2.0",  "12.0";
-    "Lancelot",     1,  "6.0",  "9.0";
-    %"Vishwas",     3,  "2.0",  "20.0";
-    "Vishwas",      3,  "1.0",  "20.0";
-    %"Reshabh",      2,  "0.5",  "10.0";
-    "Reshabh",      2,  "0.5",  "12.0";
-    "Brett",        2,  "3.0",  "9.5";
-    "Suneja",       11,  "2.0",  "12.84";
-    "Pratyush",     2,   "2.0", "10.0";
+    "Yuxuan",       15,  "5.0",  "11:20";
+    "James",        14,  "3.0",  "9:00";
+    "Jennifer",     2, "3.0",  "10:00";
+    "Chandra",      18,  "10.0", "10:00";
+    "Ellis",        4,  "10.0", "7:30";
+    "Nick",         16,  "10.0",  "8:00";
+    "Zach",         5, "6.0",  "10:30";
+    "Max",          13,  "3.0",  "9:30";
+    "Swati",        16,  "6.2",  "12:00";
+    "Sidd",         17,  "5.0",  "11:00";
+    "Amal",         17,  "5.0",  "10:00";
+    "Maya",         18,  "5.0",  "10:00";
+    "Ethan",        14,  "7.0",  "8:30";
+    "Sameer",       16,  "3.0",  "9:30";
+    "Edward",       16,  "4.0",  "10:00";
+    "Ewin",         17,  "7.0",  "9:00";
+    %"Jamie",        16,  "10.0", "8:00";
+    "Jamie",        16,  "7.0", "8:00";
+    "Johanna",      15,  "6.21", "8:00";
+    %"Jingwei",      17,  "2.0",  "11.86";
+    "Jingwei",      17,  "2.0",  "12:00";
+    "Lancelot",     17,  "6.0",  "9:00";
+    %"Vishwas",     15,  "2.0",  "20:00";
+    "Vishwas",      15,  "1.0",  "20:00";
+    %"Reshabh",      16,  "0.5",  "10:00";
+    "Reshabh",      16,  "0.5",  "12:00";
+    "Brett",        16,  "3.0",  "9:30";
+    "Priyal",       7,  "2.0",  "12:50";
+    "Pratyush",     16,   "2.0", "10:00"
 ).
 
 % Designated as responsible for their legs
-lead("Yuxuan"; "James"; "Chandra"; "Ellis"; "Zach"; "Nick").
+willingToLead("Yuxuan";"Chandra"; "Ellis"; "Zach"; "Nick").
 
 participant(Name)
-    :- preference(Name, Station, Distance, Pace).
-preferred_pace(Name, Pace)
-    :- preference(Name, Station, Distance, Pace).
-nearest_station(Name, Station)
-    :- preference(Name, Station, Distance, Pace).
-preferred_distance(Name, Distance)
-    :- preference(Name, Station, Distance, Pace).
+    :- preference(Name, Exchange, Distance, Pace).
+preferredPace(Name, Pace)
+    :- preference(Name, Exchange, Distance, Pace).
+preferredEndExchange(Name, Exchange)
+    :- preference(Name, Exchange, Distance, Pace).
+preferredDistance(Name, Distance)
+    :- preference(Name, Exchange, Distance, Pace).
 
-participants(Count) :- Count = #count{participant(X): participant(X)}.
-
-% Location exclusions
-:- station_visit("Jennifer", 7).
-
-% Strollable
-:- not stroller_traversible(S1, S2), run_leg("Maya", leg(T,S1,S2)), leg_time(T).
+participants(Count) :- Count = #count{participant(P): participant(P)}.

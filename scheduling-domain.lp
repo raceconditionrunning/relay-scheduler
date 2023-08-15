@@ -1,60 +1,72 @@
 #program base.
 
-% Your instance should define leg/3, distance/3, climbing/3, as well
-% Give preferences in preferred_pace/2 and preferred_distance/2 if needed.
+% Your instance should define leg/3, distance/3.
+% Give preferences in preferredPace/2, preferredDistance/2, preferredEndExchange/2, preferredAscent/2, and
+% preferredDescent/2 as needed. Some of the helper predicates will only "fire" if you specify relevant
+% preferences to keep the ground program as small as possible.
 
-%%% Helper predicates
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Helper predicates
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Who runs what index
-run(X,T) :- run_leg(X, leg(T,_,_)).
+run(P,T) :- assignment(P, leg(T,_,_)).
 
 % Summarize assignments
-end_station(X, Station) :- s_name(Station, _), leg(T1, _, Station), T1=#max{T:run(X, T), leg_time(T)}, participant(X).
-start_station(X, Station) :- s_name(Station, _), leg(T1, Station, _), T1=#min{T:run(X, T), leg_time(T)}, participant(X).
-assignment(X,StartName,EndName) :- s_name(StartStation, StartName), s_name(EndStation, EndName), start_station(X, StartStation), end_station(X, EndStation), participant(X).
+endExchange(P, Exchange) :- exchangeName(Exchange, _), leg(T1, _, Exchange), T1=#max{T:run(P, T), legTime(T)}, participant(P).
+startExchange(P, Exchange) :- exchangeName(Exchange, _), leg(T1, Exchange, _), T1=#min{T:run(P, T), legTime(T)}, participant(P).
 
-leg_time(T) :- leg(T,_,_).
+legTime(T) :- leg(T,_,_).
 
 % Exchanges happen before and after each leg.
-exchange_time(T1) :- T1 = T + 1, leg_time(T).
-exchange_time(T1) :- T1 = T - 1, leg_time(T).
+exchangeTime(T1) :- T1 = T + 1, legTime(T).
+exchangeTime(T1) :- T1 = T - 1, legTime(T).
 
-%%% Plan events
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plan events
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-exchange(X, T - 1) :- not run(X, T - 1), run(X, T), participant(X), leg_time(T).
-exchange(X, T + 1) :- run(X, T), not run(X, T + 1), participant(X), leg_time(T).
+exchange(P, T - 1) :- not run(P, T - 1), run(P, T), participant(P), legTime(T).
+exchange(P, T + 1) :- run(P, T), not run(P, T + 1), participant(P), legTime(T).
 
-station_visit(X, Station) :- run_leg(X, leg(_, Station, _)).
-station_visit(X, Station) :- run_leg(X, leg(_, _, Station)).
+exchangeVisit(P, Exchange) :- assignment(P, leg(_, Exchange, _)).
+exchangeVisit(P, Exchange) :- assignment(P, leg(_, _, Exchange)).
 
-%%% Plan metrics
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plan metrics
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-leg_pace(T, M) :- M = #max{P:run(X, T), preferred_pace(X,P), participant(X)}, leg_time(T). 
+% If no one is assigned, aggregate will emit #inf (infinum, smallest value possible). Restrict with a lower bound
+legPace(T, Max) :- Max > 0, Max = #max{Pace:run(P, T), preferredPace(P,Pace), participant(P)}, legTime(T).
 
-duration(T, Duration) :- Duration = Distance * M, leg_dist(T,Distance), leg_pace(T, M), leg_time(T).
+duration(T, Duration) :- Duration = Distance * M, legDist(T,Distance), legPace(T, M), legTime(T).
 
-leg_count(X, C) :- C = #count{run(X, T): run(X, T), participant(X)}, participant(X).
+legCount(P, C) :- C = #count{T: run(P, T), participant(P)}, participant(P).
 
-lead_count(T, C) :- C = #count{run(X, T): run(X, T), participant(X), lead(X)}, leg_time(T).
+legDist(T, D) :- leg(T, S1, S2), distance(S1, S2, D).
 
-leg_dist(T, D) :- leg(T, S1, S2), distance(S1, S2, D).
+legAscent(T, Climb) :- leg(T, S1, S2), ascent(S1, S2, Climb).
 
-leg_ascent(T, Climb) :- leg(T, S1, S2), ascent(S1, S2, Climb).
+legDescent(T, Climb) :- leg(T, S1, S2), descent(S1, S2, Climb).
 
-total_dist(X, Total) :- Total = #sum{Distance: leg_dist(T,Distance), run(X,T), leg_time(T)}, participant(X).
+totalDist(P, Total) :- Total = #sum{Distance: legDist(T,Distance), run(P,T), legTime(T)}, participant(P).
 
-total_ascent(X, Total) :- Total = #sum{Climb: leg_ascent(T,Climb), run(X,T), leg_time(T)}, participant(X).
+totalAscent(P, Total) :- Total = #sum{Climb: legAscent(T,Climb), run(P,T), legTime(T)}, preferredAscent(P, _), participant(P).
 
-dist_diff(X, Actual - Preferred) :- total_dist(X, Actual), preferred_distance(X, Preferred), participant(X).
-dist_deviation(X, |Diff|) :- dist_diff(X, Diff).
-dist_overage(X, Overage) :- Overage = #max{Deviation: dist_diff(X, Deviation); 0}, participant(X).
+totalDescent(P, Total) :- Total = #sum{Climb: legDescent(T,Climb), run(P,T), legTime(T)}, preferredDescent(P, _) ,participant(P).
 
-end_deviation(X, |Goal - EndStation|) :- nearest_station(X, Goal), end_station(X, EndStation), participant(X).
 
-leg_coverage(T, C) :- C = #count{run(X, T): run(X, T), participant(X)}, leg_time(T).
+distDiff(P, Actual - Preferred) :- totalDist(P, Actual), preferredDistance(P, Preferred), participant(P).
+distDeviation(P, |Diff|) :- distDiff(P, Diff).
+distOverage(P, Overage) :- Overage = #max{Deviation: distDiff(P, Deviation); 0}, participant(P).
 
-exchange_count(X, C) :- C = #count{exchange(X,T): exchange(X,T), participant(X), exchange_time(T)}, participant(X).
+endDeviation(P, Deviation) :- commuteDistance(Goal, EndExchange, Deviation), preferredEndExchange(P, Goal), endExchange(P, EndExchange), participant(P).
 
-pace_deviation(X, T, Actual - Preferred) :- leg_pace(T, Actual), run(X, T), preferred_pace(X, Preferred).
+legCoverage(T, C) :- C = #count{P: run(P, T), participant(P)}, legTime(T).
+
+exchangeCount(P, C) :- C = #count{T: exchange(P,T), exchangeTime(T)}, participant(P).
+
+paceDeviation(P, T, Actual - Preferred) :- legPace(T, Actual), run(P, T), preferredPace(P, Preferred).
 % How much faster _could_ this person run
-pace_slack(X, T, Slack) :- Slack = #max{Deviation;0}, pace_deviation(X, T, Deviation).
+paceSlack(P, T, Deviation) :- Deviation > 0, paceDeviation(P, T, Deviation).
+paceSlack(P, T, 0) :- Deviation <= 0, paceDeviation(P, T, Deviation).
