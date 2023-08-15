@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<gpx version="1.1" creator="https://onthegomap.com" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>Mount Baker to Beacon Hill</name>
+    <desc>Mostly residential with okay sidewalks. Mind the climb.</desc>
+    <link href="https://onthegomap.com">
+      <text>On The Go Map</text>
+    </link>
+    <time>2022-09-27T18:26:43.673Z</time>
+    <copyright author="On The Go Map, OpenStreetMap Contributors">
+      <year>2022</year>
+    </copyright>
+  </metadata>
+  <trk>
+    <name>0.81 mi route</name>
+<trkseg>
+    <trkpt lat="47.57665" lon="-122.2977">
+      <ele>15.9</ele>
+    </trkpt>
+    <trkpt lat="47.57665" lon="-122.29768">
+      <ele>15.9</ele>
+    </trkpt>
+    <trkpt lat="47.57736" lon="-122.29821">
+      <ele>16.2</ele>
+    </trkpt>
+    <trkpt lat="47.57741" lon="-122.2982">
+      <ele>16.1</ele>
+    </trkpt>
+    <trkpt lat="47.57743" lon="-122.29828">
+      <ele>16.1</ele>
+    </trkpt>
+    <trkpt lat="47.57751" lon="-122.29828">
+      <ele>16.2</ele>
+    </trkpt>
+    <trkpt lat="47.57752" lon="-122.29873">
+      <ele>17.3</ele>
+    </trkpt>
+    <trkpt lat="47.57753" lon="-122.29883">
+      <ele>17.7</ele>
+    </trkpt>
+    <trkpt lat="47.57753" lon="-122.29903">
+      <ele>18.8</ele>
+    </trkpt>
+    <trkpt lat="47.57753" lon="-122.29918">
+      <ele>20</ele>
+    </trkpt>
+    <trkpt lat="47.57756" lon="-122.29925">
+      <ele>20.7</ele>
+    </trkpt>
+    <trkpt lat="47.57759" lon="-122.29928">
+      <ele>20.9</ele>
+    </trkpt>
+    <trkpt lat="47.57764" lon="-122.2993">
+      <ele>21</ele>
+    </trkpt>
+    <trkpt lat="47.57828" lon="-122.29931">
+      <ele>18.5</ele>
+    </trkpt>
+    <trkpt lat="47.57827" lon="-122.29942">
+      <ele>19.5</ele>
+    </trkpt>
+    <trkpt lat="47.57828" lon="-122.30031">
+      <ele>30.1</ele>
+    </trkpt>
+    <trkpt lat="47.57834" lon="-122.30031">
+      <ele>30</ele>
+    </trkpt>
+    <trkpt lat="47.57834" lon="-122.3013">
+      <ele>41.7</ele>
+    </trkpt>
+    <trkpt lat="47.57834" lon="-122.30233">
+      <ele>53.6</ele>
+    </trkpt>
+    <trkpt lat="47.57834" lon="-122.30333">
+      <ele>62.3</ele>
+    </trkpt>
+    <trkpt lat="47.57835" lon="-122.30434">
+      <ele>64.1</ele>
+    </trkpt>
+    <trkpt lat="47.57836" lon="-122.30517">
+      <ele>64.2</ele>
+    </trkpt>
+    <trkpt lat="47.57839" lon="-122.30533">
+      <ele>64</ele>
+    </trkpt>
+    <trkpt lat="47.57844" lon="-122.30538">
+      <ele>63.8</ele>
+    </trkpt>
+    <trkpt lat="47.5786" lon="-122.3054">
+      <ele>63.3</ele>
+    </trkpt>
+    <trkpt lat="47.57865" lon="-122.30543">
+      <ele>63.1</ele>
+    </trkpt>
+    <trkpt lat="47.5787" lon="-122.30549">
+      <ele>62.9</ele>
+    </trkpt>
+    <trkpt lat="47.57872" lon="-122.30557">
+      <ele>63</ele>
+    </trkpt>
+    <trkpt lat="47.57873" lon="-122.30568">
+      <ele>63.3</ele>
+    </trkpt>
+    <trkpt lat="47.57873" lon="-122.30605">
+      <ele>64.6</ele>
+    </trkpt>
+    <trkpt lat="47.57873" lon="-122.30672">
+      <ele>66.8</ele>
+    </trkpt>
+    <trkpt lat="47.57873" lon="-122.30737">
+      <ele>70.4</ele>
+    </trkpt>
+    <trkpt lat="47.57873" lon="-122.30794">
+      <ele>73.9</ele>
+    </trkpt>
+    <trkpt lat="47.57873" lon="-122.30802">
+      <ele>74</ele>
+    </trkpt>
+    <trkpt lat="47.57873" lon="-122.30815">
+      <ele>74.4</ele>
+    </trkpt>
+    <trkpt lat="47.57873" lon="-122.30922">
+      <ele>82.4</ele>
+    </trkpt>
+    <trkpt lat="47.57873" lon="-122.30932">
+      <ele>82.6</ele>
+    </trkpt>
+    <trkpt lat="47.57873" lon="-122.30944">
+      <ele>82.9</ele>
+    </trkpt>
+    <trkpt lat="47.57873" lon="-122.31048">
+      <ele>88.5</ele>
+    </trkpt>
+    <trkpt lat="47.5787" lon="-122.31062">
+      <ele>88.7</ele>
+    </trkpt>
+    <trkpt lat="47.57866" lon="-122.31073">
+      <ele>88.8</ele>
+    </trkpt>
+    <trkpt lat="47.57863" lon="-122.31084">
+      <ele>88.9</ele>
+    </trkpt>
+    <trkpt lat="47.57861" lon="-122.3114">
+      <ele>89.1</ele>
+    </trkpt>
+    <trkpt lat="47.57861" lon="-122.31144">
+      <ele>89.1</ele>
+    </trkpt>
+    <trkpt lat="47.57867" lon="-122.31149">
+      <ele>89.2</ele>
+    </trkpt>
+    <trkpt lat="47.57869" lon="-122.31152">
+      <ele>89.2</ele>
+    </trkpt>
+    <trkpt lat="47.57938" lon="-122.31213">
+      <ele>89.1</ele>
+    </trkpt>
+    <trkpt lat="47.57939" lon="-122.31212">
+      <ele>89.1</ele>
+    </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

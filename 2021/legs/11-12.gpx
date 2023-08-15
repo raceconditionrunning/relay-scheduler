@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="https://onthegomap.com" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>Pioneer Square to University Street</name>
+    <desc>Dense urban environment with frequent crosswalks. Mainly through retail corridors. Reduced foot traffic has made the downtown area more dangerous. We expect to schedule at least three participants on this leg for safety.</desc>
+    <link href="https://onthegomap.com">
+      <text>On The Go Map</text>
+    </link>
+    <time>2021-09-17T00:00:00.000Z</time>
+    <copyright author="On The Go Map, OpenStreetMap Contributors">
+      <year>2021</year>
+    </copyright>
+  </metadata>
+<trk>
+    <name>0.49 mi route</name>
+    <trkseg>
+    <trkpt lat="47.60201" lon="-122.33087">
+        <ele>19.6</ele>
+    </trkpt>
+    <trkpt lat="47.60206" lon="-122.33092">
+        <ele>19.9</ele>
+    </trkpt>
+    <trkpt lat="47.60208" lon="-122.33094">
+        <ele>20.0</ele>
+    </trkpt>
+    <trkpt lat="47.60265" lon="-122.33149">
+        <ele>22.0</ele>
+    </trkpt>
+    <trkpt lat="47.60267" lon="-122.33151">
+        <ele>22.0</ele>
+    </trkpt>
+    <trkpt lat="47.60271" lon="-122.33155">
+        <ele>22.0</ele>
+    </trkpt>
+    <trkpt lat="47.60276" lon="-122.33159">
+        <ele>22.1</ele>
+    </trkpt>
+    <trkpt lat="47.60279" lon="-122.33158">
+        <ele>22.4</ele>
+    </trkpt>
+    <trkpt lat="47.60282" lon="-122.33157">
+        <ele>22.7</ele>
+    </trkpt>
+    <trkpt lat="47.60285" lon="-122.3315">
+        <ele>23.2</ele>
+    </trkpt>
+    <trkpt lat="47.60342" lon="-122.33202">
+        <ele>24.8</ele>
+    </trkpt>
+    <trkpt lat="47.60348" lon="-122.33207">
+        <ele>25.2</ele>
+    </trkpt>
+    <trkpt lat="47.60355" lon="-122.33214">
+        <ele>25.9</ele>
+    </trkpt>
+    <trkpt lat="47.60413" lon="-122.33267">
+        <ele>29.0</ele>
+    </trkpt>
+    <trkpt lat="47.60419" lon="-122.33272">
+        <ele>29.1</ele>
+    </trkpt>
+    <trkpt lat="47.60426" lon="-122.33279">
+        <ele>29.1</ele>
+    </trkpt>
+    <trkpt lat="47.60483" lon="-122.33332">
+        <ele>32.7</ele>
+    </trkpt>
+    <trkpt lat="47.6049" lon="-122.33339">
+        <ele>32.8</ele>
+    </trkpt>
+    <trkpt lat="47.60498" lon="-122.33345">
+        <ele>32.9</ele>
+    </trkpt>
+    <trkpt lat="47.60557" lon="-122.33398">
+        <ele>37.5</ele>
+    </trkpt>
+    <trkpt lat="47.60562" lon="-122.33403">
+        <ele>37.7</ele>
+    </trkpt>
+    <trkpt lat="47.60569" lon="-122.33409">
+        <ele>38.0</ele>
+    </trkpt>
+    <trkpt lat="47.60627" lon="-122.33463">
+        <ele>38.3</ele>
+    </trkpt>
+    <trkpt lat="47.60633" lon="-122.33469">
+        <ele>38.3</ele>
+    </trkpt>
+    <trkpt lat="47.6064" lon="-122.33476">
+        <ele>38.3</ele>
+    </trkpt>
+    <trkpt lat="47.60698" lon="-122.33528">
+        <ele>38.7</ele>
+    </trkpt>
+    <trkpt lat="47.60704" lon="-122.33533">
+        <ele>38.7</ele>
+    </trkpt>
+    <trkpt lat="47.60713" lon="-122.3354">
+        <ele>38.9</ele>
+    </trkpt>
+    <trkpt lat="47.60771" lon="-122.33594">
+        <ele>39.2</ele>
+    </trkpt>
+    <trkpt lat="47.60776" lon="-122.33598">
+        <ele>39.2</ele>
+    </trkpt>
+    <trkpt lat="47.6078" lon="-122.33589">
+        <ele>40.1</ele>
+    </trkpt>
+    <trkpt lat="47.60787" lon="-122.33596">
+        <ele>40.0</ele>
+    </trkpt>
+    <trkpt lat="47.60788" lon="-122.33594">
+        <ele>40.2</ele>
+    </trkpt>
+    <trkpt lat="47.60791" lon="-122.33586">
+        <ele>40.9</ele>
+    </trkpt>
+    <trkpt lat="47.60792" lon="-122.33586">
+        <ele>40.9</ele>
+    </trkpt>
+    </trkseg>
+</trk>
+</gpx>

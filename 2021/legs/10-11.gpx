@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="https://onthegomap.com" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>International District/Chinatown to Pioneer Square</name>
+    <desc>Urban core environment with frequent crosswalks. Large sidewalks. Reduced foot traffic has made the downtown area more dangerous. We expect to schedule at least three participants on this leg for safety.</desc>
+    <link href="https://onthegomap.com">
+      <text>On The Go Map</text>
+    </link>
+    <time>2021-09-17T00:00:00.000Z</time>
+    <copyright author="On The Go Map, OpenStreetMap Contributors">
+      <year>2021</year>
+    </copyright>
+  </metadata>
+<trk>
+    <name>0.35 mi route</name>
+    <trkseg>
+    <trkpt lat="47.59847" lon="-122.32798">
+        <ele>10.3</ele>
+    </trkpt>
+    <trkpt lat="47.59847" lon="-122.3278">
+        <ele>11.2</ele>
+    </trkpt>
+    <trkpt lat="47.599" lon="-122.3278">
+        <ele>11.4</ele>
+    </trkpt>
+    <trkpt lat="47.59905" lon="-122.32781">
+        <ele>11.3</ele>
+    </trkpt>
+    <trkpt lat="47.59908" lon="-122.32784">
+        <ele>11.0</ele>
+    </trkpt>
+    <trkpt lat="47.5991" lon="-122.32785">
+        <ele>10.9</ele>
+    </trkpt>
+    <trkpt lat="47.59911" lon="-122.32788">
+        <ele>10.7</ele>
+    </trkpt>
+    <trkpt lat="47.59912" lon="-122.3279">
+        <ele>10.6</ele>
+    </trkpt>
+    <trkpt lat="47.59913" lon="-122.3279">
+        <ele>10.5</ele>
+    </trkpt>
+    <trkpt lat="47.59917" lon="-122.32787">
+        <ele>10.8</ele>
+    </trkpt>
+    <trkpt lat="47.59919" lon="-122.32787">
+        <ele>10.8</ele>
+    </trkpt>
+    <trkpt lat="47.59922" lon="-122.32786">
+        <ele>10.9</ele>
+    </trkpt>
+    <trkpt lat="47.59928" lon="-122.32787">
+        <ele>10.8</ele>
+    </trkpt>
+    <trkpt lat="47.5993" lon="-122.32788">
+        <ele>10.7</ele>
+    </trkpt>
+    <trkpt lat="47.5993" lon="-122.32871">
+        <ele>8.5</ele>
+    </trkpt>
+    <trkpt lat="47.5993" lon="-122.32881">
+        <ele>7.6</ele>
+    </trkpt>
+    <trkpt lat="47.59934" lon="-122.32887">
+        <ele>7.9</ele>
+    </trkpt>
+    <trkpt lat="47.59941" lon="-122.32887">
+        <ele>9.8</ele>
+    </trkpt>
+    <trkpt lat="47.59993" lon="-122.32888">
+        <ele>13.5</ele>
+    </trkpt>
+    <trkpt lat="47.59993" lon="-122.32889">
+        <ele>13.4</ele>
+    </trkpt>
+    <trkpt lat="47.59995" lon="-122.32902">
+        <ele>11.5</ele>
+    </trkpt>
+    <trkpt lat="47.59998" lon="-122.32902">
+        <ele>11.6</ele>
+    </trkpt>
+    <trkpt lat="47.60003" lon="-122.32902">
+        <ele>11.6</ele>
+    </trkpt>
+    <trkpt lat="47.60012" lon="-122.32902">
+        <ele>11.7</ele>
+    </trkpt>
+    <trkpt lat="47.60054" lon="-122.32902">
+        <ele>12.4</ele>
+    </trkpt>
+    <trkpt lat="47.60071" lon="-122.32902">
+        <ele>14.8</ele>
+    </trkpt>
+    <trkpt lat="47.60078" lon="-122.32901">
+        <ele>16.3</ele>
+    </trkpt>
+    <trkpt lat="47.60088" lon="-122.32902">
+        <ele>17.2</ele>
+    </trkpt>
+    <trkpt lat="47.60104" lon="-122.32919">
+        <ele>17.4</ele>
+    </trkpt>
+    <trkpt lat="47.60135" lon="-122.32948">
+        <ele>19.8</ele>
+    </trkpt>
+    <trkpt lat="47.60144" lon="-122.32963">
+        <ele>19.9</ele>
+    </trkpt>
+    <trkpt lat="47.60151" lon="-122.32982">
+        <ele>19.7</ele>
+    </trkpt>
+    <trkpt lat="47.6016" lon="-122.33004">
+        <ele>19.3</ele>
+    </trkpt>
+    <trkpt lat="47.60172" lon="-122.33028">
+        <ele>19.4</ele>
+    </trkpt>
+    <trkpt lat="47.60179" lon="-122.33046">
+        <ele>19.4</ele>
+    </trkpt>
+    <trkpt lat="47.60178" lon="-122.33061">
+        <ele>18.9</ele>
+    </trkpt>
+    <trkpt lat="47.60177" lon="-122.33065">
+        <ele>18.7</ele>
+    </trkpt>
+    <trkpt lat="47.60178" lon="-122.33067">
+        <ele>18.7</ele>
+    </trkpt>
+    <trkpt lat="47.60179" lon="-122.33068">
+        <ele>18.7</ele>
+    </trkpt>
+    <trkpt lat="47.60181" lon="-122.33072">
+        <ele>18.8</ele>
+    </trkpt>
+    <trkpt lat="47.60182" lon="-122.33074">
+        <ele>18.8</ele>
+    </trkpt>
+    <trkpt lat="47.60187" lon="-122.33073">
+        <ele>19.1</ele>
+    </trkpt>
+    <trkpt lat="47.60194" lon="-122.3308">
+        <ele>19.3</ele>
+    </trkpt>
+    <trkpt lat="47.60201" lon="-122.33087">
+        <ele>19.6</ele>
+    </trkpt>
+    </trkseg>
+</trk>
+</gpx>
