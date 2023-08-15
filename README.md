@@ -1,21 +1,23 @@
 # relay-scheduler
 
-This is an [Answer Set Programming](https://en.wikipedia.org/wiki/Answer_set_programming) domain for scheduling relay events. The encoding was created for our [Light Rail Relay 2021 event](http://raceconditionrunning.com/light-rail-relay/).
+An [Answer Set Programming](https://en.wikipedia.org/wiki/Answer_set_programming) domain for scheduling relay events. Originially created for our [Light Rail Relay 2021 event](http://raceconditionrunning.com/light-rail-relay/).
 
 * Get schedules from scratch or pin some legs and have the solver fill in the rest
 * Easy to customize your race format in terms of things like the number of runners per leg or allowable exchanges
-* Configurable optimization for total duration or matching runner preferences for distance, pace, or end station.
-* Allows multiple optimization criteria with a defined order
+* Configurable optimization for total duration or matching runner preferences for distance, pace, or end exchange. Use multiple objectives lexicographically
+* Consumes legs specified as GPX files
 
 
 ## Usage
 
-Get a working installation of [Clingo](https://github.com/potassco/clingo) >=5.5. Potassco's Anaconda channel makes this easy.
+Get a working installation of [Clingo](https://github.com/potassco/clingo) >=5.5. Potassco's Anaconda channel makes this easy, or you can make a virtual env and install from requirements.txt
 
-Specify your problem matching the format used in `lrr-2021.lp`. For now, you'll also need to manually update the list of files used in the bottom of the `solve.lp`. 
+For Apple Silicon Macs, use homebrew and ensure you install cffi in the correct version of Python, e.g. `python3.11 -m pip install cffi'.
+
+Specify your problem matching the format used in `202X/lrr.lp`. 
 
 Now:
 
-    clingo solve.lp
+    python solve.py 202X
 
 Note that the solver will process float terms by converting them to a fixed precision. By default, this is two decimal places.
