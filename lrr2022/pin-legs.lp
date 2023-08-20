@@ -1,9 +1,5 @@
 % Accommodate pacing
-assignment("Lauren", leg(8, 8, 9)).
-assignment("Lauren", leg(9, 9, 10)).
-assignment("Lauren", leg(10, 10, 11)).
-assignment("Lauren", leg(11, 11, 12)).
-assignment("Lauren", leg(12, 12, 13)).
+:- not assignmentRange("Lauren", legRange(8, 12)).
 
 % Wants to start
 :- not exchangeVisit("Ellis", 0).
