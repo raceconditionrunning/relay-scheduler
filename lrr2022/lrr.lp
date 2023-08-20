@@ -18,8 +18,6 @@ legRange(StartTime, StopTime) :- StartTime < StopTime, legTime(StartTime), legTi
 % Exactly one leader assigned per leg
 :- not 1{leaderOn(P, T)}1, legTime(T).
 
-% Prefer that leaders don't begin leading on their first exchange
-:~ startExchange(P, LeadStartExchange), leaderAssignmentRange(P, legRange(LeadStartExchange, EndExchange)). [ 1@0 , P]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generate
@@ -32,7 +30,7 @@ legRange(StartTime, StopTime) :- StartTime < StopTime, legTime(StartTime), legTi
 
 assignment(P, leg(T, StartExchange, EndExchange)) :- leg(T, StartExchange, EndExchange), StartTime <= T, T <= StopTime, assignmentRange(P, legRange(StartTime, StopTime)).
 
-% If a leader candidate is assigned to a leg, optionally generate a (one contigous block) leadership assignment from
+% If a leader candidate is assigned to a leg, optionally generate a (one contiguous block) leadership assignment from
 % within their segment.
 0{
     leaderAssignmentRange(P, legRange(StartLead, EndLead)): StartLead=StartExchange..EndExchange, EndLead=StartExchange..EndExchange, StartLead < EndLead
@@ -48,14 +46,20 @@ leaderOn(P, T) :- leaderAssignment(P, leg(T, _, _)).
 % Priority between objectives is lexicographic, largest number to lowest
 
 % Try not to go too far over people's stated limits
-#minimize {D @ 4, P: distOverage(P, D), participant(P)}.
+#minimize {@max(Actual - Preferred, 0) @ 4, P: totalDist(P, Actual), preferredDistance(P, Preferred), participant(P)}.
 
 % Make people run the distance they want to run
-#minimize {D @ 3, P: distDeviation(P, D), participant(P)}.
+#minimize {|Actual - Preferred| @ 3, P: totalDist(P, Actual), preferredDistance(P, Preferred), participant(P)}.
 
 #minimize {EndDeviation @ 2, P: endDeviation(P, EndDeviation), participant(P)}.
 
 #minimize {Duration @ 1, T: duration(T, Duration), legTime(T)}.
+
+% Prefer that leaders don't begin leading on their first exchange
+:~ startExchange(P, LeadStartExchange), leaderAssignmentRange(X, legRange(LeadStartExchange, EndExchange)). [ 1@0 , P]
+
+% Try to use as many of the willing leaders as we can
+:~ not leaderAssignmentRange(P, legRange(_, _)), willingToLead(P). [ 1@-1 , P]
 
 % Provide a key
 objective(
@@ -63,7 +67,8 @@ objective(
     3,"dist";
     2,"commute";
     1,"duration";
-    0,"leader early start"
+    0,"leader early start";
+    -1,"leaders ignored"
 ).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,11 +76,10 @@ objective(
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Make people run the pace they want to run
-% #minimize {D @ 4: paceDeviation(P, T, D), participant(P), legTime(T)}.
-%:- Slack > 1000, paceSlack(P, T, Slack).
+% #minimize {|Actual - Preferred| @ 4: legPace(T, Actual), run(P, T), preferredPace(P, Preferred)}.
 
 % Just get within half a mile for everyone
-%:- Deviation > 50, distDiff(P, Deviation).
+%:- |Actual - Preferred| > ".50", totalDist(P, Actual), preferredDistance(P, Preferred), participant(P).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Preferences

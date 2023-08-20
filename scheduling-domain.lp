@@ -55,18 +55,8 @@ totalAscent(P, Total) :- Total = #sum{Climb: legAscent(T,Climb), run(P,T), legTi
 
 totalDescent(P, Total) :- Total = #sum{Climb: legDescent(T,Climb), run(P,T), legTime(T)}, preferredDescent(P, _) ,participant(P).
 
-
-distDiff(P, Actual - Preferred) :- totalDist(P, Actual), preferredDistance(P, Preferred), participant(P).
-distDeviation(P, |Diff|) :- distDiff(P, Diff).
-distOverage(P, Overage) :- Overage = #max{Deviation: distDiff(P, Deviation); 0}, participant(P).
-
 endDeviation(P, Deviation) :- commuteDistance(Goal, EndExchange, Deviation), preferredEndExchange(P, Goal), endExchange(P, EndExchange), participant(P).
 
 legCoverage(T, C) :- C = #count{P: run(P, T), participant(P)}, legTime(T).
 
 exchangeCount(P, C) :- C = #count{T: exchange(P,T), exchangeTime(T)}, participant(P).
-
-paceDeviation(P, T, Actual - Preferred) :- legPace(T, Actual), run(P, T), preferredPace(P, Preferred).
-% How much faster _could_ this person run
-paceSlack(P, T, Deviation) :- Deviation > 0, paceDeviation(P, T, Deviation).
-paceSlack(P, T, 0) :- Deviation <= 0, paceDeviation(P, T, Deviation).

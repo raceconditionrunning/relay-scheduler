@@ -17,8 +17,9 @@ from clingo.symbol import Number
 from clorm import desc, FactBase
 from clorm.clingo import Control
 
-from relay_scheduler.domain import LegCoverage, LegPace, Run, ExchangeName, Leg, DistDiffK, EndDeviationK, PaceSlack, \
-    LegDistK, TotalDistK, LegAscent, Objective, LegDescent, LeaderOn, Ascent, Descent
+from relay_scheduler.domain import LegCoverage, LegPace, Run, ExchangeName, Leg, EndDeviationK, \
+    LegDistK, TotalDistK, LegAscent, Objective, LegDescent, LeaderOn, Ascent, Descent, make_standard_func_ctx, \
+    PreferredDistanceK, PreferredPace
 from relay_scheduler.legs import load_from_legs_bundle, legs_to_geojson, legs_to_facts
 from relay_scheduler.schedule import assignments_to_str, schedule_to_str, schedule_to_rows
 
@@ -64,7 +65,8 @@ def get_predicate_clases_for_names(names, predicates):
 
 def extract_schedule(facts):
     LegDist = get_predicate_clases_for_names(["legDist"], facts.predicates)[0]
-
+    if LegDist is None:
+        return {}
     runners_on_legs = {leg_num: list(runners) for leg_num, runners in
                        facts.query(Run).group_by(Run.leg_id).select(Run.runner).all()}
     leader_on_leg = {leg_num: list(runners)[0] for leg_num, runners in
@@ -96,8 +98,10 @@ def extract_schedule(facts):
 
 
 def extract_assignments(facts):
-    EndDeviation, DistDiff, TotalDist = get_predicate_clases_for_names(["endDeviation", "distDiff", "totalDist"],
+    EndDeviation, TotalDist, PreferredDistance = get_predicate_clases_for_names(["endDeviation", "totalDist", "preferredDistance"],
                                                                        facts.predicates)
+    if EndDeviation is None:
+        return {}
     all_exchanges = {runner: list(exchanges)
                      for runner, exchanges in facts.query(Run, Leg, ExchangeName)
                      .group_by(Run.runner)
@@ -106,26 +110,33 @@ def extract_assignments(facts):
                      .select(ExchangeName.name).all()
                      }
     start_end_exchanges = {runner: (exchanges[0], exchanges[-1]) for runner, exchanges in all_exchanges.items()}
-    legs = {x[0]: list(x[1])
-            for x in
+    legs = {runner: list(leg_ids)
+            for runner, leg_ids in
             facts.query(Run)
             .group_by(Run.runner)
             .order_by(Run.leg_id)
             .select(Run.leg_id).all()
             }
-    leg_paces = {x[0]: list(x[1])
-                 for x in
+    leg_paces = {runner: list(paces)
+                 for runner, paces in
                  facts.query(Run, LegPace)
                  .group_by(Run.runner)
                  .join(Run.leg_id == LegPace.leg)
                  .order_by(desc(Run.leg_id))
                  .select(LegPace.pace).all()
                  }
-    runner_pace_dev = {x[0]: sum(x[1]) for x in
-                       facts.query(PaceSlack).group_by(PaceSlack.name).select(PaceSlack.deviation).all()}
+    preferred_paces = {runner: list(preferred_pace)[0] for runner, preferred_pace in
+                       facts.query(PreferredPace).group_by(PreferredPace.name).select(PreferredPace.pace).all()}
+    pace_deviations = {runner: list(map(lambda actual: actual - preferred_paces[runner], paces)) for runner, paces in leg_paces.items()}
     runner_end_dev = {x.name: x.deviation for x in facts.query(EndDeviation).all()}
-    runner_dist_dev = {x.name: x.deviation for x in facts.query(DistDiff).all()}
-    runner_names = list(facts.query(DistDiff).order_by(DistDiff.name).select(DistDiff.name).distinct().all())
+    runner_dist_dev_raw = {name: list(facts) for name, facts in facts.query(TotalDist, PreferredDistance)
+                        .join(TotalDist.name == PreferredDistance.name)
+                        .group_by(TotalDist.name)
+                        .select(TotalDist.dist, PreferredDistance.distance)
+                        .all()
+                       }
+    runner_dist_dev = {name: facts[0][0] - facts[0][1] for name, facts in runner_dist_dev_raw.items()}
+    runner_names = list(sorted(legs.keys()))
     total_dist = {x.name: x.dist for x in facts.query(TotalDist).all()}
     # We're not using the TotalAscent/Descent predicates in the domain because they blow up the ground program
     # size and we don't reason about elevation.
@@ -149,7 +160,7 @@ def extract_assignments(facts):
         details["descent_ft"] = total_descent[runner]
         details["loss_distance"] = runner_dist_dev[runner]
         details["loss_end"] = runner_end_dev[runner]
-        details["loss_pace"] = runner_pace_dev[runner]
+        details["loss_pace"] = pace_deviations[runner]
         assignments.append(details)
     return assignments
 
@@ -177,8 +188,7 @@ def main(args):
     save_all_models = args.save_all_models
     # Clorm's Control wrapper will try to parse model facts into the predicates defined in domain.py.
     ctrl = Control(
-        unifier=[LegCoverage, LegPace, Run, LegDistK(args.distance_precision), ExchangeName, Leg,
-                 DistDiffK(args.distance_precision), EndDeviationK(args.distance_precision), PaceSlack,
+        unifier=[LegCoverage, LegPace, Run, LegDistK(args.distance_precision), ExchangeName, Leg, EndDeviationK(args.distance_precision),
                  LegDistK(args.distance_precision),
                  TotalDistK(args.distance_precision), LegAscent, LegDescent, Objective, LeaderOn, Ascent, Descent])
     with ProgramBuilder(ctrl) as b:
@@ -201,7 +211,7 @@ def main(args):
                               duration_precision=args.duration_precision)
         ctrl.add_facts(FactBase(facts))
     print("Starting grounding at", datetime.datetime.now())
-    ctrl.ground([("base", [])])
+    ctrl.ground([("base", [])], context=make_standard_func_ctx())
     if save_ground_model:
         with open("program.lp", 'w') as f:
             for atom in ctrl.symbolic_atoms:

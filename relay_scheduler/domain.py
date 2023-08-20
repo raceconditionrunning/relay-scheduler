@@ -1,7 +1,16 @@
 import math
 
-from clorm import Predicate, IntegerField, StringField
+from clorm import Predicate, IntegerField, StringField, \
+    ContextBuilder
 
+
+def make_standard_func_ctx():
+    cb = ContextBuilder()
+
+    cb.register_name("min", IntegerField, IntegerField, IntegerField, min)
+    cb.register_name("max", IntegerField, IntegerField, IntegerField, max)
+
+    return cb.make_context()
 
 def DistanceFieldK(precision=2.0):
     class DistanceField(IntegerField):
@@ -29,6 +38,19 @@ def CommuteDistanceK(precision=2.0):
         dist = DistanceFieldK(precision=precision)
 
     return CommuteDistance
+
+
+def PreferredDistanceK(precision=2.0):
+    class PreferredDistance(Predicate):
+        name = StringField
+        distance = DistanceFieldK(precision=precision)
+
+    return PreferredDistance
+
+
+class PreferredPace(Predicate):
+    name = StringField
+    pace = IntegerField
 
 
 class Ascent(Predicate):
@@ -82,27 +104,12 @@ class Leg(Predicate):
     end_id = IntegerField
 
 
-def DistDiffK(precision=2.0):
-    class DistDiff(Predicate):
-        name = StringField
-        deviation = DistanceFieldK(precision=precision)
-
-    return DistDiff
-
-
 def EndDeviationK(precision=2.0):
     class EndDeviation(Predicate):
         name = StringField
         deviation = DistanceFieldK(precision=precision)
 
     return EndDeviation
-
-
-class PaceSlack(Predicate):
-    name = StringField
-    leg = IntegerField
-    deviation = IntegerField
-
 
 def TotalDistK(precision=2.0):
     class TotalDist(Predicate):
