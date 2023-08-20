@@ -1,6 +1,7 @@
 #program base.
 
 % Your instance should define leg/3, distance/3.
+% Specify optimization weights with objective/2.
 % Give preferences in preferredPace/2, preferredDistance/2, preferredEndExchange/2, preferredAscent/2, and
 % preferredDescent/2 as needed. Some of the helper predicates will only "fire" if you specify relevant
 % preferences to keep the ground program as small as possible.
@@ -60,3 +61,20 @@ endDeviation(P, Deviation) :- commuteDistance(Goal, EndExchange, Deviation), pre
 legCoverage(T, C) :- C = #count{P: run(P, T), participant(P)}, legTime(T).
 
 exchangeCount(P, C) :- C = #count{T: exchange(P,T), exchangeTime(T)}, participant(P).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Optimization objectives
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Try not to go too far over people's stated limits
+#minimize {@max(Actual - Preferred, 0) @ Weight, P: totalDist(P, Actual), preferredDistance(P, Preferred), participant(P),  objective(Weight, "dist-pref-overage")}.
+
+% Make people run the distance they want to run
+#minimize {|Actual - Preferred| @ Weight, P: totalDist(P, Actual), preferredDistance(P, Preferred), participant(P), objective(Weight, "dist-pref")}.
+
+#minimize {EndDeviation @ Weight, P: endDeviation(P, EndDeviation), participant(P), objective(Weight, "commute-pref")}.
+
+#minimize {Duration @ Weight, T: duration(T, Duration), legTime(T), objective(Weight, "duration")}.
+
+% Make people run the pace they want to run
+#minimize {|Actual - Preferred| @ Weight, P, T: legPace(T, Actual), run(P, T), preferredPace(P, Preferred), objective(Weight, "pace-pref")}.

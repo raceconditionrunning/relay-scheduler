@@ -19,10 +19,7 @@ legRange(StartTime, StopTime) :- StartTime < StopTime, legTime(StartTime), legTi
 :- C < 3, legCoverage(T, C), leg(T, StartTime, _), exchangeName(StartTime, ("Pioneer Square";"International District/Chinatown";"University Street";"Westlake")).
 
 % Exactly one leader assigned per leg
-:- not 1{leaderOn(X, T)}1, legTime(T).
-
-% Prefer that leaders don't begin leading on their first exchange
-:~ startExchange(X, LeadStartExchange), leaderAssignmentRange(X, legRange(LeadStartExchange, EndExchange)). [ 1@0 , X]
+:- not 1{leaderOn(P, T)}1, legTime(T).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generate
@@ -30,56 +27,44 @@ legRange(StartTime, StopTime) :- StartTime < StopTime, legTime(StartTime), legTi
 
 % Assign each participant to a range of legs
 1{
-   assignmentRange(X, legRange(Start, Stop)): legRange(Start, Stop)
-}1 :- participant(X).
+   assignmentRange(P, legRange(Start, Stop)): legRange(Start, Stop)
+}1 :- participant(P).
 
-assignment(X, leg(T, StartExchange, EndExchange)) :- leg(T, StartExchange, EndExchange), StartTime <= T, T <= StopTime, assignmentRange(X, legRange(StartTime, StopTime)).
+assignment(P, leg(T, StartExchange, EndExchange)) :- leg(T, StartExchange, EndExchange), StartTime <= T, T <= StopTime, assignmentRange(P, legRange(StartTime, StopTime)).
 
 % If a leader candidate is assigned to a leg, optionally generate a (one contiguous block) leadership assignment from
 % within their segment.
 0{
-    leaderAssignmentRange(X, legRange(StartLead, EndLead)): StartLead=StartExchange..EndExchange, EndLead=StartExchange..EndExchange, StartLead < EndLead
-}1 :- willingToLead(X), assignmentRange(X, legRange(StartExchange, EndExchange)).
+    leaderAssignmentRange(P, legRange(StartLead, EndLead)): StartLead=StartExchange..EndExchange, EndLead=StartExchange..EndExchange, StartLead < EndLead
+}1 :- willingToLead(P), assignmentRange(P, legRange(StartExchange, EndExchange)).
 
-leaderAssignment(X, leg(T, StartExchange, EndExchange)) :- leg(T, StartExchange, EndExchange), StartTime <= T, T <= StopTime, leaderAssignmentRange(X, legRange(StartTime, StopTime)).
+leaderAssignment(P, leg(T, StartExchange, EndExchange)) :- leg(T, StartExchange, EndExchange), StartTime <= T, T <= StopTime, leaderAssignmentRange(P, legRange(StartTime, StopTime)).
 
-leaderOn(X, T) :- leaderAssignment(X, leg(T, _, _)).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Optimization objectives
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Priority between objectives is lexicographic, largest number to lowest
-
-% Try not to go too far over people's stated limits
-#minimize {D @ 4, X: distOverage(X, D), participant(X)}.
-
-% Make people run the distance they want to run
-#minimize {D @ 3, X: distDeviation(X, D), participant(X)}.
-
-#minimize {EndDeviation @ 2, X: endDeviation(X, EndDeviation), participant(X)}.
-
-#minimize {Duration @ 1, T: duration(T, Duration), legTime(T)}.
-
-% Provide a key
-objective(
-    4,"dist overage";
-    3,"dist";
-    2,"commute";
-    1,"duration";
-    0,"leader early start"
-).
+leaderOn(P, T) :- leaderAssignment(P, leg(T, _, _)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Alternative objectives
+% Optimization
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Make people run the pace they want to run
-% #minimize {D @ 4: paceDeviation(X, T, D), participant(X), legTime(T)}.
-%:- Slack > 1000, paceSlack(X, T, Slack).
+% Prefer that leaders don't begin leading on their first exchange
+:~ startExchange(P, LeadStartExchange), leaderAssignmentRange(P, legRange(LeadStartExchange, EndExchange)), objective(Weight, "leader-early-start"). [ 1 @ Weight , P]
+
+% Try to use as many of the willing leaders as we can
+:~ not leaderAssignmentRange(P, legRange(_, _)), willingToLead(P), objective(Weight, "leaders-ignored"). [ 1 @ Weight , P]
 
 % Just get within half a mile for everyone
-%:- Deviation > 50, distDiff(X, Deviation).
+% :~ |Actual - Preferred| > ".50", totalDist(P, Actual), preferredDistance(P, Preferred), participant(P), objective(Weight, "dist-pref-close"). [1 @ Weight, P]
+
+% Lexicographic optimization. Objectives from most to least important. Reorder or remove objectives here
+objective(
+    4,"dist-pref-overage";
+    3,"dist-pref";
+    2,"commute-pref";
+    1,"duration";
+    0,"leader-early-start";
+    -1,"leaders-ignored";
+    -2,"pace-pref"
+).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Preferences

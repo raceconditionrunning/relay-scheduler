@@ -18,7 +18,6 @@ legRange(StartTime, StopTime) :- StartTime < StopTime, legTime(StartTime), legTi
 % Exactly one leader assigned per leg
 :- not 1{leaderOn(P, T)}1, legTime(T).
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -41,45 +40,28 @@ leaderAssignment(P, leg(T, StartExchange, EndExchange)) :- leg(T, StartExchange,
 leaderOn(P, T) :- leaderAssignment(P, leg(T, _, _)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Optimization objectives
+% Optimization
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Priority between objectives is lexicographic, largest number to lowest
-
-% Try not to go too far over people's stated limits
-#minimize {@max(Actual - Preferred, 0) @ 4, P: totalDist(P, Actual), preferredDistance(P, Preferred), participant(P)}.
-
-% Make people run the distance they want to run
-#minimize {|Actual - Preferred| @ 3, P: totalDist(P, Actual), preferredDistance(P, Preferred), participant(P)}.
-
-#minimize {EndDeviation @ 2, P: endDeviation(P, EndDeviation), participant(P)}.
-
-#minimize {Duration @ 1, T: duration(T, Duration), legTime(T)}.
 
 % Prefer that leaders don't begin leading on their first exchange
-:~ startExchange(P, LeadStartExchange), leaderAssignmentRange(X, legRange(LeadStartExchange, EndExchange)). [ 1@0 , P]
+:~ startExchange(P, LeadStartExchange), leaderAssignmentRange(P, legRange(LeadStartExchange, EndExchange)), objective(Weight, "leader-early-start"). [ 1 @ Weight , P]
 
 % Try to use as many of the willing leaders as we can
-:~ not leaderAssignmentRange(P, legRange(_, _)), willingToLead(P). [ 1@-1 , P]
-
-% Provide a key
-objective(
-    4,"dist overage";
-    3,"dist";
-    2,"commute";
-    1,"duration";
-    0,"leader early start";
-    -1,"leaders ignored"
-).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Alternative objectives
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Make people run the pace they want to run
-% #minimize {|Actual - Preferred| @ 4: legPace(T, Actual), run(P, T), preferredPace(P, Preferred)}.
+:~ not leaderAssignmentRange(P, legRange(_, _)), willingToLead(P), objective(Weight, "leaders-ignored"). [ 1 @ Weight , P]
 
 % Just get within half a mile for everyone
-%:- |Actual - Preferred| > ".50", totalDist(P, Actual), preferredDistance(P, Preferred), participant(P).
+% :~ |Actual - Preferred| > ".50", totalDist(P, Actual), preferredDistance(P, Preferred), participant(P), objective(Weight, "dist-pref-close"). [1 @ Weight, P]
+
+% Lexicographic optimization. Objectives from most to least important. Reorder or remove objectives here
+objective(
+    4,"dist-pref-overage";
+    3,"dist-pref";
+    2,"commute-pref";
+    1,"duration";
+    0,"leader-early-start";
+    -1,"leaders-ignored";
+    -2,"pace-pref"
+).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Preferences
