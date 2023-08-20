@@ -33,25 +33,20 @@ class FloatPaceTransformer(Transformer):
         self.distance_precision = distance_precision
         self.duration_precision = duration_precision
 
-    def visit_Function(self, node):
-        new_args = []
-        for arg in node.arguments:
-            if arg.ast_type == ast.ASTType.SymbolicTerm and arg.symbol.type == clingo.SymbolType.String:
-                if ":" in arg.symbol.string:
-                    # Parse duration (e.g. 8:00 or 12:30)
-                    seconds = sum(x * int(t) for x, t in zip([1, 60, 3600], reversed(arg.symbol.string.split(":"))))
-                    seconds = math.ceil(seconds * 10 ** self.duration_precision)
-                    new_args.append(ast.SymbolicTerm(node.location, Number(seconds)))
-                    continue
-                try:
-                    as_float = float(arg.symbol.string)
-                    as_int = math.ceil(as_float * 10 ** self.distance_precision)
-                    new_args.append(ast.SymbolicTerm(node.location, Number(as_int)))
-                except ValueError:
-                    new_args.append(arg)
-            else:
-                new_args.append(arg)
-        return node.update(arguments=new_args)
+    def visit_SymbolicTerm(self, node):
+        if node.symbol.type == clingo.SymbolType.String:
+            if ":" in node.symbol.string:
+                # Parse duration (e.g. 8:00 or 12:30)
+                seconds = sum(x * int(t) for x, t in zip([1, 60, 3600], reversed(node.symbol.string.split(":"))))
+                seconds = math.ceil(seconds * 10 ** self.duration_precision)
+                return ast.SymbolicTerm(node.location, Number(seconds))
+            try:
+                as_float = float(node.symbol.string)
+                as_int = math.ceil(as_float * 10 ** self.distance_precision)
+                return ast.SymbolicTerm(node.location, Number(as_int))
+            except ValueError:
+                return node
+        return node
 
 
 def get_predicate_clases_for_names(names, predicates):
@@ -165,7 +160,7 @@ def extract_assignments(facts):
     return assignments
 
 
-def save_solution(passthrough_args, start_time, event_name="", file_name="solution"):
+def save_solution(passthrough_args, start_time, event_name="", file_name="solution", atoms=None):
     out = {**passthrough_args}
     out["startTime"] = start_time.isoformat()
     out["foundTime"] = datetime.datetime.now().isoformat()
@@ -180,6 +175,10 @@ def save_solution(passthrough_args, start_time, event_name="", file_name="soluti
         rows = schedule_to_rows(out["schedule"])
         writer = csv.writer(f)
         writer.writerows(rows)
+    if atoms:
+        with open(f"{out_dir}/{file_name}.lp", "w") as f:
+            for atom in atoms:
+                f.write(f"{atom}.\n")
 
 
 def main(args):
@@ -190,7 +189,10 @@ def main(args):
     ctrl = Control(
         unifier=[LegCoverage, LegPace, Run, LegDistK(args.distance_precision), ExchangeName, Leg, EndDeviationK(args.distance_precision),
                  LegDistK(args.distance_precision),
-                 TotalDistK(args.distance_precision), LegAscent, LegDescent, Objective, LeaderOn, Ascent, Descent])
+                 TotalDistK(args.distance_precision), LegAscent, LegDescent, Objective, LeaderOn, Ascent, Descent, PreferredDistanceK(args.distance_precision), PreferredPace])
+    # Makes exceptions inscrutable. Disable if you need to debug
+    ctrl.configuration.solve.parallel_mode = "4,split"
+    ctrl.configuration.solve.opt_mode = "optN"
     with ProgramBuilder(ctrl) as b:
         t = FloatPaceTransformer(args.distance_precision)
         # All ASP files in the year directory
@@ -219,9 +221,10 @@ def main(args):
     solve_start_time = datetime.datetime.now()
     print("Starting solve at", solve_start_time)
     model_id = 0
-
+    first_optimal_id = None
     def on_model(model):
         nonlocal model_id
+        nonlocal first_optimal_id
         facts = model.facts(atoms=True)
         objective_names = list(facts.query(Objective).order_by(desc(Objective.index)).select(Objective.name).all())
         schedule, assignments = extract_schedule(facts), extract_assignments(facts)
@@ -232,6 +235,10 @@ def main(args):
         file_name = "solution"
         if save_all_models:
             file_name = f"{model_id}"
+        elif model.optimality_proven:
+            if not first_optimal_id:
+                first_optimal_id = model_id
+            file_name += f"_{model_id - first_optimal_id}"
         save_solution({
             "costs": costs,
             "distance_precision": args.distance_precision,
@@ -241,7 +248,7 @@ def main(args):
             "schedule": schedule,
             "assignments": assignments,
         },
-            solve_start_time, event, file_name)
+            solve_start_time, event, file_name, atoms=model.symbols(atoms=True))
 
         model_id += 1
 
