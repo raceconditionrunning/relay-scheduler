@@ -33,12 +33,17 @@ def load_from_legs_bundle(dir_path):
         ascent = sum(max(0, c2[2] - c1[2]) for c1, c2 in zip(coordinates[:-1], coordinates[1:])) * 3.28084
         descent = sum(max(0, c1[2] - c2[2]) for c1, c2 in zip(coordinates[:-1], coordinates[1:])) * 3.28084
         distance = sum(haversine.haversine(c1[:2], c2[:2], unit=haversine.Unit.MILES) for c1, c2 in zip(coordinates[:-1], coordinates[1:]))
+        description = gpx_data.xpath("//gpx:desc", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})
+        if description:
+            description = description[0].text
+        else:
+            description = ""
         leg = {'distance_mi': distance,
                'ascent_ft': ascent,
                'descent_ft': descent,
                'start_exchange': int(start_id),
                 'end_exchange': int(end_id),
-               'notes': gpx_data.xpath("//gpx:desc", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})[0].text,
+               'notes': description,
                'start_name': start_name,
                 'end_name': end_name,
                'coordinates': coordinates,

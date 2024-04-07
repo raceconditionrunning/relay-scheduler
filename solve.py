@@ -154,7 +154,7 @@ def extract_assignments(facts):
         details["ascent_ft"] = total_ascent[runner]
         details["descent_ft"] = total_descent[runner]
         details["loss_distance"] = runner_dist_dev[runner]
-        details["loss_end"] = runner_end_dev[runner]
+        details["loss_end"] = runner_end_dev.get(runner, 0) # If no entry, user has no preference
         details["loss_pace"] = pace_deviations[runner]
         assignments.append(details)
     return assignments
@@ -185,7 +185,11 @@ def main(args):
     event = args.event
     save_ground_model = args.save_ground_program
     save_all_models = args.save_all_models
-    # Clorm's Control wrapper will try to parse model facts into the predicates defined in domain.py.
+    team = args.team
+    event_name = event
+    if team:
+        event_name += f"_{team}"
+    # Clorm's `Control` wrapper will try to parse model facts into the predicates defined in domain.py.
     ctrl = Control(
         unifier=[LegCoverage, LegPace, Run, LegDistK(args.distance_precision), ExchangeName, Leg, EndDeviationK(args.distance_precision),
                  LegDistK(args.distance_precision),
@@ -197,6 +201,8 @@ def main(args):
         t = FloatPaceTransformer(args.distance_precision)
         # All ASP files in the year directory
         year_files = glob.glob(f"{event}/*.lp")
+        if team:
+            year_files = list(filter(lambda x: ("team" in x and team in x) or "team" not in x, year_files))
         parse_files(
             ["scheduling-domain.lp"] + year_files,
             lambda stm: b.add(t.visit(stm)))
@@ -248,7 +254,7 @@ def main(args):
             "schedule": schedule,
             "assignments": assignments,
         },
-            solve_start_time, event, file_name, atoms=model.symbols(atoms=True))
+            solve_start_time, event_name, file_name, atoms=model.symbols(atoms=True))
 
         model_id += 1
 
@@ -261,11 +267,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     asp_subdir_paths = glob.glob("*/*.lp")
     subdirs = set([str(pathlib.Path(p).parent) for p in asp_subdir_paths])
-    parser.add_argument("event", choices=subdirs)
-    parser.add_argument("--save-all-models", action="store_true")
-    parser.add_argument("--save-ground-program", action="store_true")
-    parser.add_argument("--distance-precision", default=2.0, type=float)
-    parser.add_argument("--elevation-precision", default=0.0, type=float)
-    parser.add_argument("--duration-precision", default=0.0, type=float)
+    parser.add_argument("event", choices=subdirs, help="Path to directory containing relay domain .lp files")
+    parser.add_argument("--save-all-models", action="store_true", help="Save all (even non-optimal) models found while solving")
+    parser.add_argument("--team", default=None, type=str, help="Include a file named 'team-<TEAM>.lp' and ignore all other .lp files beginning with 'team'. Useful for scheduling separate groups.")
+    parser.add_argument("--save-ground-program", action="store_true", help="Store the ground program to 'program.lp'. Use to debug lengthy ground-times, and to see which rules cause your domain to grow")
+    parser.add_argument("--distance-precision", default=2.0, type=float, help="Number of decimal places of fixed precision to convert distance terms to")
+    # Not implemented yet. Consider implementing if using elevation/duration optimization criteria heavily and programs are too big.
+    #parser.add_argument("--elevation-precision", default=0.0, type=float, help="Number of decimal places of fixed precision to convert elevation terms to")
+    #parser.add_argument("--duration-precision", default=0.0, type=float, help="Number of decimal places of fixed precision to convert distance terms to")
     args = parser.parse_args()
     main(args)
