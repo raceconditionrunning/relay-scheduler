@@ -12,21 +12,21 @@ def make_standard_func_ctx():
 
     return cb.make_context()
 
-def DistanceFieldK(precision=2.0):
-    class DistanceField(IntegerField):
-        # We represent distances with a fixed precision, 2 decimal places by default. We want
-        # conservative approximations of time, so always round up
-        pytocl = lambda miles: math.ceil(miles * 10 ** precision)
-        cltopy = lambda miles: miles / 10 ** precision
+def IntegerFieldK(precision=2.0):
+    class IntegerFieldK(IntegerField):
+        # Represents a number to a fixed precision, 2 decimal places by default. We want
+        # conservative approximations, so always round up
+        pytocl = lambda val: math.ceil(val * 10 ** precision)
+        cltopy = lambda val: val / 10 ** precision
 
-    return DistanceField
+    return IntegerFieldK
 
 
 def DistanceK(precision=2.0):
     class Distance(Predicate):
         start_id = IntegerField
         end_id = IntegerField
-        dist = DistanceFieldK(precision=precision)
+        dist = IntegerFieldK(precision=precision)
 
     return Distance
 
@@ -35,7 +35,7 @@ def CommuteDistanceK(precision=2.0):
     class CommuteDistance(Predicate):
         start_id = IntegerField
         end_id = IntegerField
-        dist = DistanceFieldK(precision=precision)
+        dist = IntegerFieldK(precision=precision)
 
     return CommuteDistance
 
@@ -43,14 +43,17 @@ def CommuteDistanceK(precision=2.0):
 def PreferredDistanceK(precision=2.0):
     class PreferredDistance(Predicate):
         name = StringField
-        distance = DistanceFieldK(precision=precision)
+        distance = IntegerFieldK(precision=precision)
 
     return PreferredDistance
 
 
-class PreferredPace(Predicate):
-    name = StringField
-    pace = IntegerField
+def PreferredPaceK(precision=0.0):
+    class PreferredPace(Predicate):
+        name = StringField
+        pace = IntegerFieldK(precision)
+
+    return PreferredPace
 
 
 class Ascent(Predicate):
@@ -70,9 +73,11 @@ class LegCoverage(Predicate):
     coverage = IntegerField
 
 
-class LegPace(Predicate):
-    leg = IntegerField
-    pace = IntegerField
+def LegPaceK(precision):
+    class LegPace(Predicate):
+        leg = IntegerField
+        pace = IntegerFieldK(precision)
+    return LegPace
 
 
 class Run(Predicate):
@@ -88,7 +93,7 @@ class LeaderOn(Predicate):
 def LegDistK(precision=2.0):
     class LegDist(Predicate):
         leg = IntegerField
-        dist = DistanceFieldK(precision=precision)
+        dist = IntegerFieldK(precision=precision)
 
     return LegDist
 
@@ -107,14 +112,14 @@ class Leg(Predicate):
 def EndDeviationK(precision=2.0):
     class EndDeviation(Predicate):
         name = StringField
-        deviation = DistanceFieldK(precision=precision)
+        deviation = IntegerFieldK(precision=precision)
 
     return EndDeviation
 
 def TotalDistK(precision=2.0):
     class TotalDist(Predicate):
         name = StringField
-        dist = DistanceFieldK(precision=precision)
+        dist = IntegerFieldK(precision=precision)
 
     return TotalDist
 

@@ -3,3 +3,4 @@ clorm
 haversine
 lxml
 tabulate
+xxhash

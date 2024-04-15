@@ -8,18 +8,20 @@ import json
 import math
 import os
 import pathlib
+from typing import Iterable, List, Type, Optional
 
 import clingo
 import clingo.ast as ast
 import clorm
+import xxhash
 from clingo.ast import ProgramBuilder, parse_files, Transformer
 from clingo.symbol import Number
 from clorm import desc, FactBase
 from clorm.clingo import Control
 
-from relay_scheduler.domain import LegCoverage, LegPace, Run, ExchangeName, Leg, EndDeviationK, \
+from relay_scheduler.domain import LegCoverage, LegPaceK, Run, ExchangeName, Leg, EndDeviationK, \
     LegDistK, TotalDistK, LegAscent, Objective, LegDescent, LeaderOn, Ascent, Descent, make_standard_func_ctx, \
-    PreferredDistanceK, PreferredPace
+    PreferredDistanceK, PreferredPaceK
 from relay_scheduler.legs import load_from_legs_bundle, legs_to_geojson, legs_to_facts
 from relay_scheduler.schedule import assignments_to_str, schedule_to_str, schedule_to_rows
 
@@ -49,18 +51,26 @@ class FloatPaceTransformer(Transformer):
         return node
 
 
-def get_predicate_clases_for_names(names, predicates):
+def get_predicate_clases_for_names(names: List[str], predicates: Iterable[Type[clorm.Predicate]]) -> List[Type[Optional[clorm.Predicate]]]:
+    """
+    Finds the correct generated class (various predicates are templated by user-specified precision) for each predicate
+
+    :param names: Domain predicate names
+    :param predicates: Predicates available to match from
+    :return:
+    """
     classes = [None] * len(names)
     for predicate in predicates:
         for i, search_name in enumerate(names):
             if predicate.meta.name == names[i]:
                 classes[i] = predicate
+                break
     return classes
 
 
-def extract_schedule(facts):
-    LegDist = get_predicate_clases_for_names(["legDist"], facts.predicates)[0]
-    if LegDist is None:
+def extract_schedule(facts: clorm.FactBase):
+    LegDist, LegPace = get_predicate_clases_for_names(["legDist", "legPace"], facts.predicates)
+    if LegDist is None or LegPace is None:
         return {}
     runners_on_legs = {leg_num: list(runners) for leg_num, runners in
                        facts.query(Run).group_by(Run.leg_id).select(Run.runner).all()}
@@ -92,8 +102,8 @@ def extract_schedule(facts):
     return schedule
 
 
-def extract_assignments(facts):
-    EndDeviation, TotalDist, PreferredDistance = get_predicate_clases_for_names(["endDeviation", "totalDist", "preferredDistance"],
+def extract_assignments(facts: clorm.FactBase):
+    EndDeviation, TotalDist, PreferredDistance, PreferredPace, LegPace = get_predicate_clases_for_names(["endDeviation", "totalDist", "preferredDistance", "preferredPace", "legPace"],
                                                                        facts.predicates)
     if EndDeviation is None:
         return {}
@@ -191,9 +201,9 @@ def main(args):
         event_name += f"_{team}"
     # Clorm's `Control` wrapper will try to parse model facts into the predicates defined in domain.py.
     ctrl = Control(
-        unifier=[LegCoverage, LegPace, Run, LegDistK(args.distance_precision), ExchangeName, Leg, EndDeviationK(args.distance_precision),
+        unifier=[LegCoverage, LegPaceK(args.duration_precision), Run, LegDistK(args.distance_precision), ExchangeName, Leg, EndDeviationK(args.distance_precision),
                  LegDistK(args.distance_precision),
-                 TotalDistK(args.distance_precision), LegAscent, LegDescent, Objective, LeaderOn, Ascent, Descent, PreferredDistanceK(args.distance_precision), PreferredPace])
+                 TotalDistK(args.distance_precision), LegAscent, LegDescent, Objective, LeaderOn, Ascent, Descent, PreferredDistanceK(args.distance_precision), PreferredPaceK(args.duration_precision)])
     # Makes exceptions inscrutable. Disable if you need to debug
     ctrl.configuration.solve.parallel_mode = "4,split"
     ctrl.configuration.solve.opt_mode = "optN"
@@ -232,6 +242,10 @@ def main(args):
         nonlocal model_id
         nonlocal first_optimal_id
         facts = model.facts(atoms=True)
+        # This hash should only be used for comparing solutions generated using the same version/dependencies. Clorm
+        # may change its string representation in the future, and the facts for a solution depend on the Python
+        # bindings for the predicates that we've specified.
+        factbase_hash = xxhash.xxh64_hexdigest(facts.asp_str(sorted=True))
         objective_names = list(facts.query(Objective).order_by(desc(Objective.index)).select(Objective.name).all())
         schedule, assignments = extract_schedule(facts), extract_assignments(facts)
         print(assignments_to_str(assignments))
@@ -249,10 +263,11 @@ def main(args):
             "costs": costs,
             "distance_precision": args.distance_precision,
             "duration_precision": args.duration_precision,
-            "elevation_precision": args.elevation_precision,
+            #"elevation_precision": args.elevation_precision,
             "optimal": model.optimality_proven,
             "schedule": schedule,
             "assignments": assignments,
+            "hash": factbase_hash
         },
             solve_start_time, event_name, file_name, atoms=model.symbols(atoms=True))
 
@@ -274,6 +289,6 @@ if __name__ == "__main__":
     parser.add_argument("--distance-precision", default=2.0, type=float, help="Number of decimal places of fixed precision to convert distance terms to")
     # Not implemented yet. Consider implementing if using elevation/duration optimization criteria heavily and programs are too big.
     #parser.add_argument("--elevation-precision", default=0.0, type=float, help="Number of decimal places of fixed precision to convert elevation terms to")
-    #parser.add_argument("--duration-precision", default=0.0, type=float, help="Number of decimal places of fixed precision to convert distance terms to")
+    parser.add_argument("--duration-precision", default=0.0, type=float, help="Number of decimal places of fixed precision to convert distance terms to")
     args = parser.parse_args()
     main(args)
