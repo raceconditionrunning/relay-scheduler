@@ -21,6 +21,12 @@ Now:
 
     ./solve.py lrr2023
 
+Solutions will stream into a timestamped folder in `solutions/`. By default, all optimal solutions are saved.
+
 Use `--help` to see additional options.
 
 Note that the solver will process float terms by converting them to a fixed precision (two decimal places, by default).
+
+To view a solution, use 
+    
+        ./print_schedule.py solutions/<run>/solution.json

@@ -18,7 +18,7 @@ def assignments_to_str(assignments):
     return tabulate(rows, headers=["Runner", "Start", "End", "Distance", "Paces", "Ascent", "Loss Distance", "Loss Commute", "Loss Pace"])
 
 
-def schedule_to_str(schedule, exchange_overhead=4 * 60):
+def schedule_to_str(schedule, exchange_overhead=2 * 60):
     start_offset = 0
     rows = []
     for leg in schedule:
@@ -37,7 +37,7 @@ def schedule_to_str(schedule, exchange_overhead=4 * 60):
     return tabulate(rows, headers=["Leg", "Offset", "Start", "Distance", "Pace", "Ascent", "Leader", "Runners"])
 
 
-def schedule_to_rows(schedule, exchange_overhead=4 * 60):
+def schedule_to_rows(schedule, exchange_overhead=2 * 60):
     start_offset = 0
     rows = [["Leg", "Start Station", "Leader", "Runners", "Distance (mi)", "Pace /mi", "Scheduled Start"]]
     for leg in schedule:
