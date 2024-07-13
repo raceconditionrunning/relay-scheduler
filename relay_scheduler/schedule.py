@@ -15,6 +15,8 @@ def assignments_to_str(assignments):
         rows.append([r["runner"], r["start_exchange"], r["end_exchange"], r["distance_mi"],
                      list(map(pace_to_str, r["paces"])), r["ascent_ft"], r["loss_distance"],
                      r["loss_end"], r["loss_pace"]])
+    rows.append(
+        ["Total", "", "", "", "", "", sum(x["loss_distance"] for x in assignments), sum(x["loss_end"] for x in assignments), sum(sum(x["loss_pace"]) for x in assignments)])
     return tabulate(rows, headers=["Runner", "Start", "End", "Distance", "Paces", "Ascent", "Loss Distance", "Loss Commute", "Loss Pace"])
 
 

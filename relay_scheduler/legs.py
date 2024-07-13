@@ -120,8 +120,8 @@ def legs_to_facts(legs, distance_precision, duration_precision):
 
     CommuteDistance = CommuteDistanceK(distance_precision)
     pairwise_distances = []
-    for id1, coord1 in exchange_coords:
-        for id2, coord2 in exchange_coords:
+    for id1, coord1 in exchange_coords_set:
+        for id2, coord2 in exchange_coords_set:
             if id1 < id2:
                 pairwise_distances.append((id1, id2, haversine.haversine(coord1[:2], coord2[:2], unit=haversine.Unit.MILES)))
                 facts.append(CommuteDistance(start_id=id1, end_id=id2, dist=pairwise_distances[-1][2]))
