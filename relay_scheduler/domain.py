@@ -171,7 +171,7 @@ class LegDescent(Predicate):
 
 
 class Objective(Predicate):
-    index = IntegerField
+    priority = IntegerField
     name = StringField
 
 

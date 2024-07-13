@@ -221,11 +221,11 @@ def main(args):
         # may change its string representation in the future, and the facts for a solution depend on the Python
         # bindings for the predicates that we've specified.
         factbase_hash = xxhash.xxh64_hexdigest(facts.asp_str(sorted=True))
-        objective_names = list(facts.query(Objective).order_by(desc(Objective.index)).select(Objective.name).all())
+        objectives_by_priority = dict(facts.query(Objective).order_by(desc(Objective.priority)).select(Objective.priority, Objective.name).all())
         schedule, assignments = extract_schedule(facts, args.distance_precision, args.duration_precision), extract_assignments(facts, args.distance_precision, args.duration_precision)
         print(assignments_to_str(assignments))
         print(schedule_to_str(schedule))
-        costs = dict((zip(objective_names, model.cost)))
+        costs = {objectives_by_priority[priority]: cost for priority, cost in zip(model.priority, model.cost)}
         print(costs)
         file_name = "solution"
         if save_all_models:
