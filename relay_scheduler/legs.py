@@ -21,7 +21,6 @@ def load_from_legs_bundle(dir_path):
         points = gpx_data.xpath("//gpx:trkpt", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})
         coordinates = []
         for point in points:
-
             elevation = point.xpath("gpx:ele", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})[0].text
             coordinates.append((float(point.attrib["lat"]), float(point.attrib["lon"]), float(elevation)))
         title = gpx_data.xpath("//gpx:name", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})[0].text
@@ -57,30 +56,44 @@ def flip_lat_long(lat_long_ele_point):
     return (lat_long_ele_point[1], lat_long_ele_point[0], lat_long_ele_point[2])
 
 
-def legs_to_geojson(legs):
+def relay_to_geojson(legs, sequences):
     features = []
-    for leg in sorted(legs.values(), key=lambda x: x["start_exchange"]):
+    for leg in legs.values():
         leg_without_coordinates = {k: v for k, v in leg.items() if k != "coordinates"}
+        # Float props likely have too much precision. Round them to 2 decimal places
+        for k, v in leg_without_coordinates.items():
+            if isinstance(v, float):
+                leg_without_coordinates[k] = round(v, 2)
+        exchange_pair = (leg["start_exchange"], leg["end_exchange"])
+        if exchange_pair not in sequences:
+            # We must not be running this leg
+            continue
+        leg_without_coordinates["sequences"] = sequences[exchange_pair]
         leg_feature = {"type": "Feature",
                        "properties": leg_without_coordinates,
                        "geometry": {"type": "LineString",
                                     "coordinates": list(map(flip_lat_long, leg["coordinates"]))}}
         features.append(leg_feature)
+    features = sorted(features, key=lambda x: x["properties"]["sequences"])
+
+    # Pull exchanges implied by the legs
     exchanges = {}
-    for leg in sorted(legs.values(), key=lambda x: x["start_exchange"]):
-        exchanges[leg["start_exchange"]] = (leg["start_exchange"],
-                                         leg["start_name"],
-                                         leg["coordinates"][0])
-        exchanges[leg["end_exchange"]] = (leg["end_exchange"],
-                                       leg["end_name"],
-                                       leg["coordinates"][-1])
+    for leg, coordinates in zip(map(lambda x: x["properties"], features), map(lambda x: x["geometry"]["coordinates"], features)):
+        exchanges[leg["start_exchange"]] = {"id": leg["start_exchange"],
+                                         "name":leg["start_name"],
+                                         "coordinates": coordinates[0]}
+        exchanges[leg["end_exchange"]] = {"id": leg["end_exchange"],
+                                       "name": leg["end_name"],
+                                       "coordinates": coordinates[-1]}
     for id, exchange in sorted(exchanges.items()):
         exchange_feature = {"type": "Feature",
-                            "properties": {"id": exchange[0],
-                                           "name": exchange[1]},
+                            "properties": {k: v for k, v in exchange.items() if k != "coordinates"},
                             "geometry": {"type": "Point",
-                                         "coordinates": flip_lat_long(exchange[2])}}
+                                         "coordinates": flip_lat_long(exchange["coordinates"])}}
         features.append(exchange_feature)
+    # Add a unique ID to each feature
+    for i, feature in enumerate(features):
+        feature["properties"]["id"] = i
     return {"type": "FeatureCollection",
             "features": features}
 

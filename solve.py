@@ -18,7 +18,7 @@ from relay_scheduler.domain import LegCoverage, LegPaceK, Run, ExchangeName, Leg
     LegDistK, LegAscent, Objective, LegDescent, LeaderOn, Ascent, Descent, make_standard_func_ctx, \
     PreferredDistanceK, PreferredPaceK, DurationPrecision, DistancePrecision, WillingToLead, DistanceK, \
     PreferredEndExchange, CommuteDistanceK
-from relay_scheduler.legs import load_from_legs_bundle, legs_to_geojson, legs_to_facts
+from relay_scheduler.legs import load_from_legs_bundle, legs_to_facts, relay_to_geojson
 from relay_scheduler.participants import participants_to_facts, load_participants
 from relay_scheduler.schedule import assignments_to_str, schedule_to_str, schedule_to_rows
 from relay_scheduler.transformer import FloatPaceTransformer
