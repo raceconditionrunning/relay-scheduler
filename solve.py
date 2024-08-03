@@ -20,110 +20,9 @@ from relay_scheduler.domain import LegCoverage, LegPaceK, Run, ExchangeName, Leg
     PreferredEndExchange, CommuteDistanceK
 from relay_scheduler.legs import load_from_legs_bundle, legs_to_facts, relay_to_geojson
 from relay_scheduler.participants import participants_to_facts, load_participants
-from relay_scheduler.schedule import assignments_to_str, schedule_to_str, schedule_to_rows
+from relay_scheduler.schedule import assignments_to_str, schedule_to_str, schedule_to_rows, extract_schedule, \
+    extract_assignments
 from relay_scheduler.transformer import FloatPaceTransformer
-
-
-def extract_schedule(facts: clorm.FactBase, distance_precision: float, duration_precision: float):
-    LegDist, LegPace = LegDistK(distance_precision), LegPaceK(duration_precision)
-    runners_on_legs = {leg_num: list(runners) for leg_num, runners in
-                       facts.query(Run).group_by(Run.leg_id).select(Run.runner).all()}
-    leader_on_leg = {leg_num: list(runners)[0] for leg_num, runners in
-                     facts.query(LeaderOn).group_by(LeaderOn.leg_id).select(LeaderOn.runner).all()}
-    exchange_names = dict(facts.query(ExchangeName).select(ExchangeName.id, ExchangeName.name).all())
-    legs = list(facts.query(Leg).order_by(Leg.id).all())
-    leg_paces = list(facts.query(LegPace).order_by(LegPace.leg).select(LegPace.pace).all())
-    leg_ascent = list(facts.query(Ascent).order_by(Ascent.start_id).select(Ascent.ascent).all())
-    leg_descent = list(facts.query(Descent).order_by(Descent.start_id).select(Descent.descent).all())
-    leg_dist = list(facts.query(LegDist).order_by(LegDist.leg).select(LegDist.dist).all())
-
-    schedule = []
-    for leg_num in range(len(legs)):
-        exchange_start, exchange_end = legs[leg_num].start_id, legs[leg_num].end_id
-        details = {}
-        details["leg"] = leg_num
-        details["start_exchange_name"] = exchange_names[exchange_start]
-        details["end_exchange_name"] = exchange_names[exchange_end]
-        details["start_exchange"] = exchange_start
-        details["end_exchange"] = exchange_end
-        details["runners"] = runners_on_legs[leg_num]
-        details["leader"] = leader_on_leg[leg_num]
-        details["pace_mi"] = leg_paces[leg_num]
-        details["distance_mi"] = leg_dist[leg_num]
-        details["ascent_ft"] = leg_ascent[leg_num]
-        details["descent_ft"] = leg_descent[leg_num]
-        schedule.append(details)
-    return schedule
-
-
-def extract_assignments(facts: clorm.FactBase, distance_precision: float, duration_precision: float):
-    PreferredDistance, PreferredPace, LegPace, Distance, CommuteDistance = PreferredDistanceK(distance_precision), PreferredPaceK(duration_precision), LegPaceK(
-        duration_precision), DistanceK(distance_precision), CommuteDistanceK(distance_precision)
-
-    all_exchanges = {runner: list(exchange_pairs)
-                     for runner, exchange_pairs in facts.query(Run, Leg)
-                     .group_by(Run.runner)
-                     .join(Run.leg_id == Leg.id)
-                     .order_by(Run.leg_id)
-                     .select(Leg.start_id, Leg.end_id).all()
-                     }
-    all_exchanges = {runner: [x[0] for x in exchange_pairs] + [exchange_pairs[-1][1]] for runner, exchange_pairs in all_exchanges.items()}
-    start_end_exchanges = {runner: (exchanges[0], exchanges[-1]) for runner, exchanges in all_exchanges.items()}
-    exchange_names = dict(facts.query(ExchangeName).select(ExchangeName.id, ExchangeName.name).all())
-    legs = {runner: list(leg_ids)
-            for runner, leg_ids in
-            facts.query(Run)
-            .group_by(Run.runner)
-            .order_by(Run.leg_id)
-            .select(Run.leg_id).all()
-            }
-    leg_paces = {runner: list(paces)
-                 for runner, paces in
-                 facts.query(Run, LegPace)
-                 .group_by(Run.runner)
-                 .join(Run.leg_id == LegPace.leg)
-                 .order_by(desc(Run.leg_id))
-                 .select(LegPace.pace).all()
-                 }
-    preferred_paces = {runner: list(preferred_pace)[0] for runner, preferred_pace in
-                       facts.query(PreferredPace).group_by(PreferredPace.name).select(PreferredPace.pace).all()}
-    pace_deviations = {runner: list(map(lambda actual: actual - preferred_paces[runner], paces)) for runner, paces in leg_paces.items()}
-    runner_pref_end = dict(facts.query(PreferredEndExchange).select(PreferredEndExchange.name, PreferredEndExchange.exchange_id).all())
-    runner_end_dev = {runner: facts.query(CommuteDistance).where(CommuteDistance.start_id == start_end_exchanges[runner][1], CommuteDistance.end_id == runner_pref_end[runner]).select(CommuteDistance.dist).first() for runner in runner_pref_end.keys()}
-    runner_preferred_dist = dict(facts.query(PreferredDistance)
-                        .select(PreferredDistance.name, PreferredDistance.distance)
-                        .all())
-
-    runner_names = list(sorted(legs.keys()))
-
-    # We're not using the auxilliary predicates because, unless the user specified an optimization directive
-    # that needs, them they won't be grounded. We recompute here in any case
-    total_dist = {name: sum(dists) for name, dists in
-                    facts.query(Run, Leg, Distance).group_by(Run.runner).join(Leg.id == Run.leg_id, Distance.start_id == Leg.start_id, Distance.end_id == Leg.end_id).select(Distance.dist).all()}
-    runner_dist_dev = {name: total_dist[name] - preferred_dist for name, preferred_dist in runner_preferred_dist.items()}
-    total_ascent = {name: sum(ascents) for name, ascents in
-                    facts.query(Run, Leg, Ascent).group_by(Run.runner).join(Leg.id == Run.leg_id, Ascent.start_id == Leg.start_id, Ascent.end_id == Leg.end_id).order_by(
-                        Run.leg_id).select(Ascent.ascent).all()}
-    total_descent = {name: sum(ascents) for name, ascents in
-                    facts.query(Run, Leg, Descent).group_by(Run.runner).join(Leg.id == Run.leg_id, Descent.start_id == Leg.start_id, Descent.end_id == Leg.end_id).order_by(
-                        Run.leg_id).select(Descent.descent).all()}
-
-    assignments = []
-    for runner in sorted(runner_names):
-        details = {}
-        details["runner"] = runner
-        details["legs"] = legs[runner]
-        details["start_exchange"] = exchange_names[start_end_exchanges[runner][0]]
-        details["end_exchange"] = exchange_names[start_end_exchanges[runner][1]]
-        details["paces"] = leg_paces[runner]
-        details["distance_mi"] = total_dist[runner]
-        details["ascent_ft"] = total_ascent[runner]
-        details["descent_ft"] = total_descent[runner]
-        details["loss_distance"] = runner_dist_dev[runner]
-        details["loss_end"] = runner_end_dev.get(runner, 0) # If no entry, user has no preference
-        details["loss_pace"] = pace_deviations[runner]
-        assignments.append(details)
-    return assignments
 
 
 def save_solution(passthrough_args, start_time, event_name="", file_name="solution", atoms=None):
@@ -147,6 +46,28 @@ def save_solution(passthrough_args, start_time, event_name="", file_name="soluti
                 f.write(f"{atom}.\n")
 
 
+def build_ctrl(args):
+    # Clorm's `Control` wrapper will try to parse model facts into the predicates defined in domain.py.
+    ctrl = Control(
+        unifier=[LegCoverage, LegPaceK(args.duration_precision), Run, LegDistK(args.distance_precision), ExchangeName,
+                 Leg,
+                 LegDistK(args.distance_precision), LegAscent, LegDescent, Objective, LeaderOn,
+                 DistanceK(args.distance_precision), Ascent, Descent, PreferredDistanceK(args.distance_precision),
+                 PreferredPaceK(args.duration_precision), PreferredEndExchange,
+                 CommuteDistanceK(args.distance_precision)])
+    # Makes exceptions inscrutable. Disable if you need to debug
+    # ctrl.configuration.solve.parallel_mode = "4,split"
+    # ctrl.configuration.solve.opt_mode = "optN"
+    with ProgramBuilder(ctrl) as b:
+        t = FloatPaceTransformer(args.distance_precision)
+        # All ASP files in the year directory
+        year_files = glob.glob(f"{args.event}/*.lp")
+        parse_files(
+            ["scheduling-domain.lp"] + year_files,
+            lambda stm: b.add(t.visit(stm)))
+    return ctrl
+
+
 def main(args):
     event = args.event
     save_ground_model = args.save_ground_program
@@ -155,60 +76,57 @@ def main(args):
     event_name = event
     if team:
         event_name += f"_{team}"
-    # Clorm's `Control` wrapper will try to parse model facts into the predicates defined in domain.py.
-    ctrl = Control(
-        unifier=[LegCoverage, LegPaceK(args.duration_precision), Run, LegDistK(args.distance_precision), ExchangeName, Leg,
-                 LegDistK(args.distance_precision), LegAscent, LegDescent, Objective, LeaderOn, DistanceK(args.distance_precision), Ascent, Descent, PreferredDistanceK(args.distance_precision), PreferredPaceK(args.duration_precision), PreferredEndExchange, CommuteDistanceK(args.distance_precision)])
-    # Makes exceptions inscrutable. Disable if you need to debug
-    #ctrl.configuration.solve.parallel_mode = "4,split"
-    #ctrl.configuration.solve.opt_mode = "optN"
-    with ProgramBuilder(ctrl) as b:
-        t = FloatPaceTransformer(args.distance_precision)
-        # All ASP files in the year directory
-        year_files = glob.glob(f"{event}/*.lp")
-        if team:
-            # User wants specific team, don't include other team files
-            year_files = list(filter(lambda x: ("team" in x and team in x) or "team" not in x, year_files))
-        parse_files(
-            ["scheduling-domain.lp"] + year_files,
-            lambda stm: b.add(t.visit(stm)))
+    team_program = [(team, [])] if team else []
+    ctrl = build_ctrl(args)
+    additional_facts = []
 
     # You can supply a bundle of GPX legs and we'll
     # turn them into facts. Otherwise, all the facts
     # need to be in an .lp file in the folder.
     if os.path.isdir(f"{event}/legs"):
-        legs = load_from_legs_bundle(f"{event}/legs")
-        # Dump out geojson representation so you can check map
-        with open(f"{event}/relay.geojson", "w") as f:
-            json.dump(legs_to_geojson(legs), f, indent=2)
-        facts = legs_to_facts(legs, distance_precision=args.distance_precision,
+        legs_data = load_from_legs_bundle(f"{event}/legs")
+        facts = legs_to_facts(legs_data, distance_precision=args.distance_precision,
                               duration_precision=args.duration_precision)
-        ctrl.add_facts(FactBase(facts))
+        additional_facts.extend(facts)
 
     # Load team participants from TSV, if the file exists.
     # Otherwise, these facts need to be in an .lp file.
     if team and os.path.exists(f"{event}/team-{team}.tsv"):
         participants = load_participants(pathlib.Path(f"{event}/team-{team}.tsv"))
-        # Extract the name -> ID mapping from facts so far
+        # Extract the name -> ID mapping from facts so far.
+        # Get from control in case they were in .lp files
         exchanges = clorm.unify([ExchangeName], [x.symbol for x in ctrl.symbolic_atoms.by_signature("exchangeName", 2)])
+        # Get from extra facts if came from leg bundle
+        exchanges.add(additional_facts)
         exchanges = dict(exchanges.query(ExchangeName).select(ExchangeName.name, ExchangeName.id).all())
         facts = participants_to_facts(participants, exchanges, args.distance_precision, args.duration_precision)
-        ctrl.add_facts(FactBase(facts))
+        additional_facts.extend(facts)
 
     # Add precision facts so ASP can be written using the same precision
     # e.g. preferredDist("Runner", @k("10.5",P)) , distancePrecision(P).
-    ctrl.add_facts(
-        FactBase(
-            [DistancePrecision(str(args.distance_precision)),
-             DurationPrecision(str(args.duration_precision))
-             ]))
+    additional_facts.extend(
+        [DistancePrecision(str(args.distance_precision)),
+            DurationPrecision(str(args.duration_precision))
+            ])
+    to_add = FactBase(additional_facts)
+    with open(f"{event}/facts.lpx", "w") as f:
+        f.writelines(to_add.asp_str())
+    ctrl.add_facts(to_add)
 
     print("Starting grounding at", datetime.datetime.now())
-    ctrl.ground([("base", [])], context=make_standard_func_ctx())
+    ctrl.ground([("base", [])] + team_program, context=make_standard_func_ctx())
+
     if save_ground_model:
-        with open("program.lp", 'w') as f:
+        with open("program.lpx", 'w') as f:
             for atom in ctrl.symbolic_atoms:
                 f.write(f"{atom.symbol}.\n")
+
+    # Dump out geojson representation so you can check map
+    with open(f"{event}/relay.geojson", "w") as f:
+        sequences = clorm.unify([Leg], [x.symbol for x in ctrl.symbolic_atoms.by_signature("leg", 3)])
+        sequences = {start_end: list(index) for start_end, index in sequences.query(Leg).group_by(Leg.start_id, Leg.end_id).select(Leg.id).all()}
+        json.dump(relay_to_geojson(legs_data, sequences), f, indent=2)
+
     solve_start_time = datetime.datetime.now()
     print("Starting solve at", solve_start_time)
     model_id = 0
