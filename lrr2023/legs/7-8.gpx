@@ -13,6 +13,7 @@
   </metadata>
   <trk>
     <name>1.39 mi route</name>
+    <trkseg>
     <trkpt lat="47.57939" lon="-122.31213">
       <ele>89</ele>
     </trkpt>
@@ -259,5 +260,6 @@
     <trkpt lat="47.58061" lon="-122.32733">
       <ele>5.9</ele>
     </trkpt>
+    </trkseg>
   </trk>
 </gpx>
