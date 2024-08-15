@@ -1,82 +1,103 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<gpx version="1.1" creator="https://onthegomap.com" xmlns="http://www.topografix.com/GPX/1/1">
+<?xml version='1.0' encoding='UTF-8'?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="https://onthegomap.com">
   <metadata>
     <name>SODO to Stadium</name>
-    <desc>Entirely on the SODO trail, a dedicated multi-use pathway that runs along the Link and the busway.</desc>
-    <link href="https://onthegomap.com">
-      <text>On The Go Map</text>
-    </link>
-    <time>2022-09-27T18:32:53.690Z</time>
+    <desc>Entirely on the SODO trail, a dedicated multi-use pathway that runs along the Link and the busway. Enjoy the SODO Track murals.</desc>
     <copyright author="On The Go Map, OpenStreetMap Contributors">
       <year>2022</year>
     </copyright>
+    <link href="https://onthegomap.com">
+      <text>On The Go Map</text>
+    </link>
+    <time>2024-09-18T00:00:00.000000Z</time>
   </metadata>
   <trk>
     <name>0.86 mi route</name>
     <trkseg>
-    <trkpt lat="47.58061" lon="-122.32732">
-      <ele>5.9</ele>
-    </trkpt>
-    <trkpt lat="47.58062" lon="-122.3272">
-      <ele>5.9</ele>
-    </trkpt>
-    <trkpt lat="47.58073" lon="-122.32723">
-      <ele>5.9</ele>
-    </trkpt>
-    <trkpt lat="47.58189" lon="-122.32724">
-      <ele>5.9</ele>
-    </trkpt>
-    <trkpt lat="47.58213" lon="-122.32731">
-      <ele>5.6</ele>
-    </trkpt>
-    <trkpt lat="47.58596" lon="-122.32732">
-      <ele>6.4</ele>
-    </trkpt>
-    <trkpt lat="47.58607" lon="-122.32728">
-      <ele>6.6</ele>
-    </trkpt>
-    <trkpt lat="47.58614" lon="-122.32728">
-      <ele>6.6</ele>
-    </trkpt>
-    <trkpt lat="47.58624" lon="-122.32729">
-      <ele>6.6</ele>
-    </trkpt>
-    <trkpt lat="47.58626" lon="-122.3273">
-      <ele>6.5</ele>
-    </trkpt>
-    <trkpt lat="47.58634" lon="-122.32732">
-      <ele>6.5</ele>
-    </trkpt>
-    <trkpt lat="47.58813" lon="-122.32731">
-      <ele>6.4</ele>
-    </trkpt>
-    <trkpt lat="47.58836" lon="-122.32728">
-      <ele>6.2</ele>
-    </trkpt>
-    <trkpt lat="47.58922" lon="-122.32706">
-      <ele>6.7</ele>
-    </trkpt>
-    <trkpt lat="47.59227" lon="-122.32702">
-      <ele>6.1</ele>
-    </trkpt>
-    <trkpt lat="47.59228" lon="-122.32702">
-      <ele>6.1</ele>
-    </trkpt>
-    <trkpt lat="47.59227" lon="-122.32702">
-      <ele>6.1</ele>
-    </trkpt>
-    <trkpt lat="47.59227" lon="-122.32709">
-      <ele>6.1</ele>
-    </trkpt>
-    <trkpt lat="47.59227" lon="-122.32714">
-      <ele>6.1</ele>
-    </trkpt>
-    <trkpt lat="47.59227" lon="-122.3272">
-      <ele>6.1</ele>
-    </trkpt>
-    <trkpt lat="47.59163" lon="-122.32719">
-      <ele>6.8</ele>
-    </trkpt>
+      <trkpt lat="47.58001" lon="-122.32733">
+        <ele>5.89</ele>
+      </trkpt>
+      <trkpt lat="47.58062" lon="-122.32733">
+        <ele>6.05</ele>
+      </trkpt>
+      <trkpt lat="47.58063" lon="-122.32721">
+        <ele>5.91</ele>
+      </trkpt>
+      <trkpt lat="47.58074" lon="-122.32725">
+        <ele>6.22</ele>
+      </trkpt>
+      <trkpt lat="47.58190" lon="-122.32725">
+        <ele>6.09</ele>
+      </trkpt>
+      <trkpt lat="47.58216" lon="-122.32732">
+        <ele>6.18</ele>
+      </trkpt>
+      <trkpt lat="47.58597" lon="-122.32732">
+        <ele>6.66</ele>
+      </trkpt>
+      <trkpt lat="47.58606" lon="-122.32729">
+        <ele>6.77</ele>
+      </trkpt>
+      <trkpt lat="47.58608" lon="-122.32729">
+        <ele>6.77</ele>
+      </trkpt>
+      <trkpt lat="47.58615" lon="-122.32729">
+        <ele>6.75</ele>
+      </trkpt>
+      <trkpt lat="47.58624" lon="-122.32729">
+        <ele>6.76</ele>
+      </trkpt>
+      <trkpt lat="47.58627" lon="-122.32729">
+        <ele>6.76</ele>
+      </trkpt>
+      <trkpt lat="47.58628" lon="-122.32730">
+        <ele>6.76</ele>
+      </trkpt>
+      <trkpt lat="47.58635" lon="-122.32732">
+        <ele>6.61</ele>
+      </trkpt>
+      <trkpt lat="47.58815" lon="-122.32731">
+        <ele>6.54</ele>
+      </trkpt>
+      <trkpt lat="47.58836" lon="-122.32728">
+        <ele>6.45</ele>
+      </trkpt>
+      <trkpt lat="47.58904" lon="-122.32711">
+        <ele>6.34</ele>
+      </trkpt>
+      <trkpt lat="47.58922" lon="-122.32707">
+        <ele>6.34</ele>
+      </trkpt>
+      <trkpt lat="47.58937" lon="-122.32706">
+        <ele>6.35</ele>
+      </trkpt>
+      <trkpt lat="47.59198" lon="-122.32705">
+        <ele>6.62</ele>
+      </trkpt>
+      <trkpt lat="47.59214" lon="-122.32704">
+        <ele>6.11</ele>
+      </trkpt>
+      <trkpt lat="47.59227" lon="-122.32702">
+        <ele>6.11</ele>
+      </trkpt>
+      <trkpt lat="47.59227" lon="-122.32708">
+        <ele>6.05</ele>
+      </trkpt>
+      <trkpt lat="47.59227" lon="-122.32711">
+        <ele>6.05</ele>
+      </trkpt>
+      <trkpt lat="47.59227" lon="-122.32713">
+        <ele>6.05</ele>
+      </trkpt>
+      <trkpt lat="47.59227" lon="-122.32719">
+        <ele>6.05</ele>
+      </trkpt>
+      <trkpt lat="47.59170" lon="-122.32719">
+        <ele>6.88</ele>
+      </trkpt>
+      <trkpt lat="47.59165" lon="-122.32719">
+        <ele>6.94</ele>
+      </trkpt>
     </trkseg>
   </trk>
 </gpx>
