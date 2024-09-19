@@ -30,3 +30,29 @@ Note that the solver will process float terms by converting them to a fixed prec
 To view a solution, use 
     
         ./print_schedule.py solutions/<run>/solution.json
+
+### Formatting Legs
+
+A leg is a GPX file with a single track. The file is named `StartExchangeID-EndExchangeID.gpx`. The `<name>` tag should contain `Start Exchange Name to End Exchange Name`, and a `<desc>` tag with a summary of the leg.
+
+### Formatting Participants
+
+The participant file is a TSV with the following columns:
+
+* `Name`
+* `Pace` ("MM:SS", min/mi)
+* `Distance` (mi)
+* `PreferredEndExchange` exchange name, (optional)
+* `Leader` whether participant wants to lead (optional, yes/no)
+
+Loading participants from TSV is purely to make it easier to copy and paste from a spreadsheet; you can provide `participant/1` and preference facts manually if you prefer.
+
+## Debugging and Extending
+
+Running `solve.py` will output `facts.lpx` into the domain folder so you can check how any TSV/GPX specified facts were loaded.
+
+In contrast with the facts output, the ground program has rules and simplifications applied. Inspecting the fully ground facts (solve with `--save-ground-facts`) can help you catch missing facts and bugged rules. 
+
+`solve.py` is basically equivalent to `clingo --outf=0 --out-atomf=%s. scheduling-domain.lp domain/*.lp domain/facts.lpx`, so you can further debug using clingo-specific options. `--text` will output the full ground program (including expanded optimization directives).
+
+You can use `print_schedule.py` to view a schedule table directly from raw clingo output. Call clingo with `clingo --outf=0 --out-atomf=%s. scheduling-domain.lp domain/*.lp domain/facts.lpx > solutions.txt` (note the important dot delimiter argument). Then run `print_schedule.py solutions.txt` to view the schedule.
