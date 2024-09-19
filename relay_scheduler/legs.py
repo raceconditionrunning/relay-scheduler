@@ -1,3 +1,4 @@
+import json
 from glob import glob
 
 import clingo
@@ -89,13 +90,37 @@ def relay_to_geojson(legs, sequences):
         exchange_feature = {"type": "Feature",
                             "properties": {k: v for k, v in exchange.items() if k != "coordinates"},
                             "geometry": {"type": "Point",
-                                         "coordinates": flip_lat_long(exchange["coordinates"])}}
+                                         "coordinates": exchange["coordinates"]}}
         features.append(exchange_feature)
     # Add a unique ID to each feature
     for i, feature in enumerate(features):
         feature["properties"]["id"] = i
     return {"type": "FeatureCollection",
             "features": features}
+
+
+def dump_geojson_with_compact_geometry(geojson, f):
+    f.write('{"type":"FeatureCollection","features":[\n')
+
+    for i, feature in enumerate(geojson['features']):
+        # Create a copy of the feature without the geometry
+        feature_copy = feature.copy()
+        geometry = feature_copy.pop('geometry')
+
+        # Dump the feature without geometry
+        f.write(json.dumps(feature_copy, indent=2)[:-2])  # Remove the closing `}` of the feature
+
+        # Add the compact geometry inside the feature
+        compact_geometry = json.dumps(geometry, separators=(',', ':'))
+        f.write(f', "geometry":{compact_geometry}\n}}')
+
+        # Handle commas between features
+        if i < len(geojson['features']) - 1:
+            f.write(',\n')
+        else:
+            f.write('\n')
+
+    f.write(']}\n')
 
 
 def legs_to_facts(legs, distance_precision, duration_precision):

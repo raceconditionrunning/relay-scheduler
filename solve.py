@@ -18,7 +18,8 @@ from relay_scheduler.domain import LegCoverage, LegPaceK, Run, ExchangeName, Leg
     LegDistK, LegAscent, Objective, LegDescent, LeaderOn, Ascent, Descent, make_standard_func_ctx, \
     PreferredDistanceK, PreferredPaceK, DurationPrecision, DistancePrecision, WillingToLead, DistanceK, \
     PreferredEndExchange, CommuteDistanceK
-from relay_scheduler.legs import load_from_legs_bundle, legs_to_facts, relay_to_geojson
+from relay_scheduler.legs import load_from_legs_bundle, legs_to_facts, relay_to_geojson, \
+    dump_geojson_with_compact_geometry
 from relay_scheduler.participants import participants_to_facts, load_participants
 from relay_scheduler.schedule import assignments_to_str, schedule_to_str, schedule_to_rows, extract_schedule, \
     extract_assignments
@@ -125,7 +126,7 @@ def main(args):
     with open(f"{event}/relay.geojson", "w") as f:
         sequences = clorm.unify([Leg], [x.symbol for x in ctrl.symbolic_atoms.by_signature("leg", 3)])
         sequences = {start_end: list(index) for start_end, index in sequences.query(Leg).group_by(Leg.start_id, Leg.end_id).select(Leg.id).all()}
-        json.dump(relay_to_geojson(legs_data, sequences), f, indent=2)
+        dump_geojson_with_compact_geometry(relay_to_geojson(legs_data, sequences), f)
 
     solve_start_time = datetime.datetime.now()
     print("Starting solve at", solve_start_time)
