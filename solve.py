@@ -57,8 +57,9 @@ def build_ctrl(args):
                  PreferredPaceK(args.duration_precision), PreferredEndExchange,
                  CommuteDistanceK(args.distance_precision)])
     # Makes exceptions inscrutable. Disable if you need to debug
-    # ctrl.configuration.solve.parallel_mode = "4,split"
-    # ctrl.configuration.solve.opt_mode = "optN"
+    if args.jobs > 1:
+        ctrl.configuration.solve.parallel_mode = f"{args.jobs},split"
+    ctrl.configuration.solve.opt_mode = "optN"
     with ProgramBuilder(ctrl) as b:
         t = FloatPaceTransformer(args.distance_precision)
         # All ASP files in the year directory
@@ -184,5 +185,6 @@ if __name__ == "__main__":
     # Not implemented yet. Consider implementing if using elevation/duration optimization criteria heavily and programs are too big.
     #parser.add_argument("--elevation-precision", default=0.0, type=float, help="Number of decimal places of fixed precision to convert elevation terms to")
     parser.add_argument("--duration-precision", default=0.0, type=float, help="Number of decimal places of fixed precision to convert distance terms to")
+    parser.add_argument("-j", "--jobs", type=int, default=4, help="Number of cores to use for solving.")
     args = parser.parse_args()
     main(args)

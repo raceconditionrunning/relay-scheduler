@@ -67,7 +67,7 @@ def main(args):
         for answer_set, cost in zip(answer_sets, costs):
             schedule, assignments = extract_schedule_from_answer_set(answer_set)
             print(assignments_to_str(assignments))
-            print(schedule_to_str(schedule, exchange_overhead=args.exchange_overhead))
+            print(schedule_to_str(schedule, exchange_overhead=args.exchange_overhead, climbing_adjustment=args.climbing_adjustment))
 
     elif args.solution_path.suffix == ".json":
         with open(args.solution_path) as f:
@@ -75,13 +75,14 @@ def main(args):
         costs = solution["costs"].items()
         schedule, assignments = solution["schedule"], solution["assignments"]
         print(assignments_to_str(assignments))
-        print(schedule_to_str(schedule, exchange_overhead=args.exchange_overhead))
+        print(schedule_to_str(schedule, exchange_overhead=args.exchange_overhead, ascent_factor=args.ascent_factor))
         print(costs)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("solution_path", type=pathlib.Path)
-    parser.add_argument("--exchange-overhead", type=int, default=2 * 60, help="Time in seconds to add at each exchange")
+    parser.add_argument("--exchange-overhead", type=int, default=60, help="Time in seconds to add at each exchange")
+    parser.add_argument("--ascent-factor", type=int, default=10, help="Seconds per mile added for each 100ft of elevation gain on a leg")
     args = parser.parse_args()
     main(args)

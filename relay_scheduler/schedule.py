@@ -41,6 +41,8 @@ def extract_schedule(facts: clorm.FactBase, distance_precision: float, duration_
     LegDist, LegPace = LegDistK(distance_precision), LegPaceK(duration_precision)
     runners_on_legs = {leg_num: list(runners) for leg_num, runners in
                        facts.query(Run).group_by(Run.leg_id).select(Run.runner).all()}
+    if len(runners_on_legs) == 0:
+        raise ValueError("No runners found in the facts. Did you forget to load the participants?")
     leader_on_leg = {leg_num: list(runners)[0] for leg_num, runners in
                      facts.query(LeaderOn).group_by(LeaderOn.leg_id).select(LeaderOn.runner).all()}
     exchange_names = dict(facts.query(ExchangeName).select(ExchangeName.id, ExchangeName.name).all())
@@ -171,35 +173,65 @@ def assignments_to_str(assignments):
     return tabulate(rows, headers=["Runner", "Start", "End", "Distance", "Paces", "Ascent", "Loss Distance", "Loss Commute", "Loss Pace"])
 
 
-def schedule_to_str(schedule, exchange_overhead=2 * 60):
+def schedule_to_str(schedule, exchange_overhead=60, ascent_factor=10):
+    """
+    Convert a schedule to a pretty string
+    :param schedule: The schedule to convert
+    :param exchange_overhead: The time to add at each exchange. Halved for exchanges with no new runners
+    :param ascent_factor: Number of seconds per mile to add per 100 feet of elevation gain
+    """
     start_offset = 0
     rows = []
+    previous_runners = set()
     for leg in schedule:
         leg_num = leg["leg"]
-        pace = leg["pace_mi"]
+        # Add a little time for elevation gain, only in 5s/mi per 50ft/mi of gain increments
+        pace = leg["pace_mi"] + math.floor((leg["ascent_ft"] / leg["distance_mi"] / 50)) * (ascent_factor / 2)
         pace_pretty = pace_to_str(pace)
         offset_pretty = pace_to_str(start_offset)
         leg_participants = ', '.join(sorted(leg["runners"]))
         rows.append([leg_num, offset_pretty, leg["start_exchange_name"], leg["distance_mi"], pace_pretty, leg["ascent_ft"],
                      leg.get("leader", None), leg_participants])
         leg_duration = pace * leg["distance_mi"]
-        start_offset += math.ceil(exchange_overhead + leg_duration)
+        # Are there new runners on this leg?
+        starting_runners = set(leg["runners"]) - previous_runners
+        if not starting_runners:
+            exchange_buffer = exchange_overhead // 2
+        else:
+            exchange_buffer = exchange_overhead
+        start_offset += math.ceil(exchange_buffer + leg_duration)
+        previous_runners = set(leg["runners"])
     offset_pretty = pace_to_str(start_offset)
     rows.append(
         ["Total", offset_pretty, "", sum(x["distance_mi"] for x in schedule), "", sum(x["ascent_ft"] for x in schedule), "", ""])
     return tabulate(rows, headers=["Leg", "Offset", "Start", "Distance", "Pace", "Ascent", "Leader", "Runners"])
 
 
-def schedule_to_rows(schedule, exchange_overhead=2 * 60):
+def schedule_to_rows(schedule, exchange_overhead=60, ascent_factor=10):
+    """
+    Convert a schedule to a list of rows
+    :param schedule: The schedule to convert
+    :param exchange_overhead: The time to add at each exchange. Halved for exchanges with no new runners
+    :param ascent_factor: Number of seconds per mile to add per 100 feet of elevation gain
+    """
     start_offset = 0
     rows = [["Leg", "Start Station", "Leader", "Runners", "Distance (mi)", "Pace /mi", "Scheduled Start"]]
+    previous_runners = set()
     for leg in schedule:
         leg_num = leg["leg"]
-        pace = leg["pace_mi"]
+        # Add a little time for elevation gain, only in 5s/mi per 50ft/mi of gain increments
+        pace = leg["pace_mi"] + math.floor((leg["ascent_ft"] / leg["distance_mi"] / 50)) * (ascent_factor / 2)
         pace_pretty = pace_to_str(pace)
         offset_pretty = pace_to_str(start_offset)
         leg_participants = ', '.join(sorted(leg["runners"]))
         rows.append([leg_num, leg["start_exchange_name"], leg.get("leader", None), leg_participants, leg["distance_mi"], pace_pretty, offset_pretty])
         leg_duration = pace * leg["distance_mi"]
-        start_offset += math.ceil(exchange_overhead + leg_duration)
+        # Are there new runners on this leg?
+        starting_runners = set(leg["runners"]) - previous_runners
+        if not starting_runners:
+            exchange_buffer = exchange_overhead // 2
+        else:
+            exchange_buffer = exchange_overhead
+        start_offset += math.ceil(exchange_buffer + leg_duration)
+        previous_runners = set(leg["runners"])
     return rows
