@@ -48,8 +48,8 @@ def extract_schedule(facts: clorm.FactBase, distance_precision: float, duration_
     exchange_names = dict(facts.query(ExchangeName).select(ExchangeName.id, ExchangeName.name).all())
     legs = list(facts.query(Leg).order_by(Leg.id).all())
     leg_paces = list(facts.query(LegPace).order_by(LegPace.leg).select(LegPace.pace).all())
-    leg_ascent = list(facts.query(Ascent).order_by(Ascent.start_id).select(Ascent.ascent).all())
-    leg_descent = list(facts.query(Descent).order_by(Descent.start_id).select(Descent.descent).all())
+    leg_ascent = list(facts.query(Ascent, Leg).join(Leg.start_id == Ascent.start_id, Leg.end_id == Ascent.end_id).order_by(Leg.id).select(Ascent.ascent).all())
+    leg_descent = list(facts.query(Descent, Leg).join(Leg.start_id == Descent.start_id, Leg.end_id == Descent.end_id).order_by(Leg.id).select(Descent.descent).all())
     leg_dist = list(facts.query(LegDist).order_by(LegDist.leg).select(LegDist.dist).all())
 
     schedule = []
