@@ -77,3 +77,6 @@ legCoverage(T, C) :- C = #count{P: run(P, T), participant(P)}, legTime(T).
 
 % Make people run the pace they want to run
 #minimize {|Actual - Preferred| @ Priority, P, T: legPace(T, Actual), run(P, T), preferredPace(P, Preferred), objective(Priority, "pace-pref")}.
+
+% Minimize exchanges: only useful when non-consequetive legs are allowed
+#minimize{1 @ Priority, P, T: exchange(P,T), exchangeTime(T), participant(P), objective(Priority, "exchange-count")}.

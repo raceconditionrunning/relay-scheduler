@@ -25,7 +25,7 @@ legRange(StartTime, StopTime) :- StartTime < StopTime, legTime(StartTime), legTi
 :- C != 2, exchangeCount(P, C), participant(P).
 
 % Atleast 2 people on each leg
-:- C < 2, legCoverage(T, C), leg(T, _, _).
+%:- C < 2, legCoverage(T, C), leg(T, _, _).
 
 % Exactly one leader assigned per leg
 :- not 1{leaderOn(P, T)}1, legTime(T).

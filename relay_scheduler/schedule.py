@@ -173,7 +173,7 @@ def assignments_to_str(assignments):
     return tabulate(rows, headers=["Runner", "Start", "End", "Distance", "Paces", "Ascent", "Loss Distance", "Loss Commute", "Loss Pace"])
 
 
-def schedule_to_str(schedule, exchange_overhead=60, ascent_factor=10):
+def schedule_to_str(schedule, exchange_overhead=45, ascent_factor=10):
     """
     Convert a schedule to a pretty string
     :param schedule: The schedule to convert
@@ -207,7 +207,7 @@ def schedule_to_str(schedule, exchange_overhead=60, ascent_factor=10):
     return tabulate(rows, headers=["Leg", "Offset", "Start", "Distance", "Pace", "Ascent", "Leader", "Runners"])
 
 
-def schedule_to_rows(schedule, exchange_overhead=60, ascent_factor=10):
+def schedule_to_rows(schedule, exchange_overhead=45, ascent_factor=10):
     """
     Convert a schedule to a list of rows
     :param schedule: The schedule to convert
