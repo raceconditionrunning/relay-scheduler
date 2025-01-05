@@ -1,12 +1,12 @@
 % Lexicographic optimization. Objectives from most to least important. Reorder or remove objectives here
 objective(
-    6,"dist-pref-overage";
-    5,"dist-pref";
-    4,"commute-pref";
+    0,"dist-pref-overage";
+    1,"dist-pref";
+    2,"commute-pref";
     3,"duration";
-    2,"leader-early-start";
-    1,"leaders-ignored";
-    0,"pace-pref"
+    4,"leader-early-start";
+    5,"leaders-ignored";
+    6,"pace-pref"
 ).
 
 % Preferences are given in TSV
@@ -39,7 +39,7 @@ legRange(StartTime, StopTime) :- StartTime < StopTime, legTime(StartTime), legTi
 }1 :- participant(P).
 
 :- startExchange(P, StartExchange), not assignmentRange(P, legRange(Start, _)), leg(Start, StartExchange, _), participant(P).
-%:- endExchange(P, EndExchange), not assignmentRange(P, legRange(_, EndExchange)), participant(P).
+:- endExchange(P, EndExchange), not assignmentRange(P, legRange(_, End)), leg(End, _, EndExchange), participant(P).
 
 assignment(P, leg(T, StartExchange, EndExchange)) :- leg(T, StartExchange, EndExchange), StartTime <= T, T <= StopTime, assignmentRange(P, legRange(StartTime, StopTime)).
 

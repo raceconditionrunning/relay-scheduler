@@ -4,7 +4,8 @@ import time
 from functools import cached_property
 
 from clingo import parse_term, Model
-from clingo.ast import ProgramBuilder, parse_files
+from clingo.symbol import SymbolType, Function
+from clingo.ast import ProgramBuilder, parse_files, SymbolicTerm, Location, Position
 from clinguin.server.application.backends import ClingoBackend
 from clinguin.utils.logger import domctl_log
 from clinguin.server.data.domain_state import solve
@@ -166,3 +167,26 @@ class WebBackend(ClingoBackend):
             self._model = symbols
 
         return " ".join([str(s) + "." for s in self._model]) + "\n"
+
+    def add_atom_transform(self, predicate):
+        """
+        Adds an atom, restarts the control and grounds
+
+        Arguments:
+
+            predicate (str): The clingo symbol to be added
+        """
+        t = FloatPaceTransformer()
+        pos = Position('<string>', 1, 1)
+        loc = Location(pos, pos)
+        predicate_symbol = parse_term(predicate)
+        if predicate_symbol.type == SymbolType.Function:
+            arguments = []
+            for argument in predicate_symbol.arguments:
+                arguments.append(t.visit(SymbolicTerm(loc, argument)).symbol)
+            predicate_symbol = Function(predicate_symbol.name, arguments, predicate_symbol.positive)
+        if predicate_symbol not in self._atoms:
+            self._add_atom(predicate_symbol)
+            self._init_ctl()
+            self._ground()
+            self._outdate()
