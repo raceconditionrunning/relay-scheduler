@@ -86,7 +86,7 @@ def main(args):
     # turn them into facts. Otherwise, all the facts
     # need to be in an .lp file in the folder.
     if os.path.isdir(f"{event}/legs"):
-        legs_data = load_from_legs_bundle(f"{event}/legs")
+        legs_data, exchanges_data = load_from_legs_bundle(f"{event}/legs")
         facts = legs_to_facts(legs_data, distance_precision=args.distance_precision,
                               duration_precision=args.duration_precision)
         additional_facts.extend(facts)
@@ -127,7 +127,7 @@ def main(args):
     with open(f"{event}/relay.geojson", "w") as f:
         sequences = clorm.unify([Leg], [x.symbol for x in ctrl.symbolic_atoms.by_signature("leg", 3)])
         sequences = {start_end: list(index) for start_end, index in sequences.query(Leg).group_by(Leg.start_id, Leg.end_id).select(Leg.id).all()}
-        dump_geojson_with_compact_geometry(relay_to_geojson(legs_data, sequences), f)
+        dump_geojson_with_compact_geometry(relay_to_geojson(legs_data, sequences, exchanges_data), f)
 
     solve_start_time = datetime.datetime.now()
     print("Starting solve at", solve_start_time)

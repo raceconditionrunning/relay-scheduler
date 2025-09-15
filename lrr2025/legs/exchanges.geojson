@@ -1,0 +1,439 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Angle Lake",
+            "landmark": "\"Cloud\" sculpture hanging on platform",
+            "image_url": "/img/lrr25/angle_lake.avif",
+            "id": 165,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/angle-lake-station",
+            "stopCodeNorth": "40_99913",
+            "stopCodeSouth": "40_99914"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.29777,
+                47.42271
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "SeaTac/Airport",
+            "landmark": "\"Celestial Navigations\" sextant sculpture",
+            "image_url": "/img/lrr25/seatac.avif",
+            "id": 164,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/seatac-airport-station",
+            "stopCodeNorth": "40_99903",
+            "stopCodeSouth": "40_99904"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.29599,
+                47.44562
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Tukwila International Blvd",
+            "landmark": "\"Soundings\" banjo-esque sculpture",
+            "image_url": "/img/lrr25/tukwila.avif",
+            "id": 163,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/tukwila-international-boulevard-station",
+            "stopCodeNorth": "40_99905",
+            "stopCodeSouth": "40_99900"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.28798,
+                47.46421
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Rainier Beach",
+            "landmark": "\"Parable\" iron pears sculpture",
+            "image_url": "/img/lrr25/rainier_beach.avif",
+            "id": 161,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/rainier-beach-station",
+            "stopCodeNorth": "40_55578",
+            "stopCodeSouth": "40_56173"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.27876,
+                47.52363
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Othello",
+            "image_url": "/img/lrr25/othello.avif",
+            "id": 160,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/othello-station",
+            "landmark": "\"Rainier Valley Haiku\" graduation cap and shoe sculpture",
+            "stopCodeNorth": "40_55656",
+            "stopCodeSouth": "40_56159"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.281910,
+                47.539279
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Columbia City",
+            "landmark": "\"Garden Windows/Pride\" red-brick lion sculpture",
+            "image_url": "/img/lrr25/columbia_city.avif",
+            "id": 158,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/columbia-city-station",
+            "stopCodeNorth": "40_55778",
+            "stopCodeSouth": "40_56039"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.291762, 47.558755
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Mount Baker",
+            "landmark": "\"Sky Within\" sculpture hanging under platform",
+            "image_url": "/img/lrr25/mount_baker.avif",
+            "id": 157,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/mount-baker-station",
+            "stopCodeNorth": "40_55860",
+            "stopCodeSouth": "40_55949"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.29772,
+                47.57667
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Beacon Hill",
+            "landmark": "\"Common Threads-Community Patterns\" poles sculpture",
+            "image_url": "/img/lrr25/beacon_hill.avif",
+            "id": 156,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/beacon-hill-station",
+            "stopCodeNorth": "40_99240",
+            "stopCodeSouth": "40_99121"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.312033,
+                47.57933
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "SODO",
+            "landmark": "\"Made in USA\" arch sculpture",
+            "image_url": "/img/lrr25/sodo.avif",
+            "id": 155,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/sodo-station",
+            "stopCodeNorth": "40_99256",
+            "stopCodeSouth": "40_99111"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.32731,
+                47.58013
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Stadium",
+            "landmark": "SODO Trail, view of T-Mobile Park",
+            "image_url": "/img/lrr25/stadium.avif",
+            "id": 154,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/stadium-station",
+            "stopCodeNorth": "40_99260",
+            "stopCodeSouth": "40_99101"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.32706,
+                47.59205
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "International District/Chinatown",
+            "landmark": "Plaza across from Historic Chinatown Gate",
+            "image_url": "/img/lrr25/international_district.avif",
+            "id": 153,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/international-district-chinatown-station",
+            "stopCodeNorth": "40_621",
+            "stopCodeSouth": "40_623"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.32783,
+                47.59838
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Pioneer Square",
+            "landmark": "Large cable car wheel on mezzanine, through C-entrance",
+            "image_url": "/img/lrr25/pioneer_square.avif",
+            "id": 152,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/pioneer-square-station",
+            "stopCodeNorth": "40_532",
+            "stopCodeSouth": "40_501"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.33095,
+                47.60198
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Symphony",
+            "landmark": "B-entrance, street level Benaroya Hall sign",
+            "image_url": "/img/lrr25/symphony.avif",
+            "id": 151,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/university-street-station",
+            "stopCodeNorth": "40_565",
+            "stopCodeSouth": "40_455"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.33693,
+                47.60761
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Westlake",
+            "landmark": "A2-entrance, street level, Monorail sign",
+            "image_url": "/img/lrr25/westlake.avif",
+            "id": 150,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/westlake-station",
+            "stopCodeNorth": "40_1121",
+            "stopCodeSouth": "40_1108"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.33672, 47.61184
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Capitol Hill",
+            "landmark": "\"andimgonnamisseverybody\" sculpture, AIDS Memorial Pathway",
+            "image_url": "/img/lrr25/capitol_hill.avif",
+            "id": 149,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/capitol-hill-station",
+            "stopCodeNorth": "40_99603",
+            "stopCodeSouth": "40_99610"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.32017,
+                47.61908
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "University of Washington",
+            "image_url": "/img/lrr25/university_of_washington.avif",
+            "id": 148,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/university-washington-station",
+            "landmark": "North entrance, bridge level view of Husky Stadium",
+            "stopCodeNorth": "40_99605",
+            "stopCodeSouth": "40_99604"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.30386,
+                47.65009
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "U District",
+            "landmark": "B-entrance huge U District sign",
+            "image_url": "/img/lrr25/u_district.avif",
+            "id": 147,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/u-district-station",
+            "stopCodeNorth": "40_990002",
+            "stopCodeSouth": "40_990001"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.31425,
+                47.65987
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Roosevelt",
+            "landmark": "\"Building Blocks\" yellow tower sculpture",
+            "image_url": "/img/lrr25/roosevelt.avif",
+            "id": 146,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/roosevelt-station",
+            "stopCodeNorth": "40_990004",
+            "stopCodeSouth": "40_990003"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.3159,
+                47.67646
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Northgate",
+            "landmark": "\"Understory\" steel tree sculpture",
+            "image_url": "/img/lrr25/northgate.avif",
+            "id": 145,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/northgate-station",
+            "stopCodeNorth": "40_990006",
+            "stopCodeSouth": "40_990005"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.328116,
+                47.7021913
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Shoreline South/148th",
+            "landmark": "Big Dipper on garage, part of \"Flow\" sculpture",
+            "image_url": "/img/lrr25/shoreline_south.avif",
+            "id": 143,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/shoreline-south-148th-station",
+            "stopCodeNorth": "40_N15-T1",
+            "stopCodeSouth": "40_N15-T2"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [-122.32408, 47.73549
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Shoreline North/185th",
+            "landmark": "\"Octavia’s Garden\" neon squiggly sculpture",
+            "image_url": "/img/lrr25/shoreline_north.avif",
+            "id": 142,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/shoreline-north-185th-station",
+
+            "stopCodeNorth": "40_N17-T1",
+            "stopCodeSouth": "40_N17-T2"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.32277,
+                47.76345
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Mountlake Terrace",
+            "landmark": "\"ReforeStation\" orange paneling under platform near B entrance",
+            "image_url": "/img/lrr25/mountlake_terrace.avif",
+            "id": 141,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/mountlake-terrace-station",
+            "stopCodeNorth": "40_N19-T1",
+            "stopCodeSouth": "40_N19-T2"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.31467,
+                47.78477
+            ]
+        }
+    },
+    {
+        "type": "Feature",
+        "properties": {
+            "name": "Lynnwood City Center",
+            "landmark": "\"City Hummingbird\" sculpture",
+            "image_url": "/img/lrr25/lynnwood_city_center.avif",
+            "id": 140,
+            "stationInfo": "https://www.soundtransit.org/ride-with-us/stops-stations/lynnwood-city-center-station",
+            "stopCodeNorth": "40_N23-T1",
+            "stopCodeSouth": "40_N23-T2"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -122.29451,
+                47.81596
+            ]
+        }
+    }
+]
+}

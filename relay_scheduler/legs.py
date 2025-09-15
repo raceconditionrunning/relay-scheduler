@@ -14,6 +14,20 @@ from relay_scheduler.domain import DistanceK, Ascent, ExchangeName, CommuteDista
 def load_from_legs_bundle(dir_path):
     legs = {}
 
+    # Load rich exchange metadata if exchanges.geojson exists
+    exchanges_data = None
+    exchanges_file = os.path.join(dir_path, "exchanges.geojson")
+    if os.path.exists(exchanges_file):
+        with open(exchanges_file) as f:
+            exchanges_geojson = json.load(f)
+            exchanges_data = {
+                feature["properties"]["id"]: {
+                    **feature["properties"],
+                    "coordinates": feature["geometry"]["coordinates"]
+                }
+                for feature in exchanges_geojson["features"]
+            }
+
     for gpx_filename in glob(os.path.join(dir_path, "*.gpx")):
         # Filenames are assumed to be of the form "<start_id>-<end_id>.gpx"
         start_id, end_id = os.path.splitext(os.path.basename(gpx_filename))[0].split("-")
@@ -24,6 +38,36 @@ def load_from_legs_bundle(dir_path):
         for point in points:
             elevation = point.xpath("gpx:ele", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})[0].text
             coordinates.append((float(point.attrib["lat"]), float(point.attrib["lon"]), float(elevation)))
+
+        waypoints = gpx_data.xpath("//gpx:wpt", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})
+        pois = []
+        for waypoint in waypoints:
+            poi = {
+                'lat': float(waypoint.attrib["lat"]),
+                'lon': float(waypoint.attrib["lon"])
+            }
+
+            elevation_elem = waypoint.xpath("gpx:ele", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})
+            if elevation_elem:
+                poi['elevation'] = float(elevation_elem[0].text)
+
+            name_elem = waypoint.xpath("gpx:name", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})
+            if name_elem:
+                poi['name'] = name_elem[0].text
+
+            comment_elem = waypoint.xpath("gpx:cmt", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})
+            if comment_elem:
+                poi['comment'] = comment_elem[0].text
+
+            desc_elem = waypoint.xpath("gpx:desc", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})
+            if desc_elem:
+                poi['description'] = desc_elem[0].text
+
+            sym_elem = waypoint.xpath("gpx:sym", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})
+            if sym_elem:
+                poi['symbol'] = sym_elem[0].text
+
+            pois.append(poi)
         title = gpx_data.xpath("//gpx:name", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})[0].text
         keywords_tag = gpx_data.xpath("//gpx:keywords", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})
         attributes = []
@@ -38,6 +82,11 @@ def load_from_legs_bundle(dir_path):
             description = description[0].text
         else:
             description = ""
+
+        time_elem = gpx_data.xpath("//gpx:metadata/gpx:time", namespaces={"gpx": "http://www.topografix.com/GPX/1/1"})
+        time = None
+        if time_elem:
+            time = time_elem[0].text
         leg = {'distance_mi': distance,
                'ascent_ft': ascent,
                'descent_ft': descent,
@@ -47,20 +96,37 @@ def load_from_legs_bundle(dir_path):
                'start_name': start_name,
                 'end_name': end_name,
                'coordinates': coordinates,
-               'attributes': attributes
+               'attributes': attributes,
+               'pois': pois,
+               'time': time
                }
         legs[(int(start_id), int(end_id))] = leg
-    return legs
+
+    return legs, exchanges_data
 
 
 def flip_lat_long(lat_long_ele_point):
     return (lat_long_ele_point[1], lat_long_ele_point[0], lat_long_ele_point[2])
 
 
-def relay_to_geojson(legs, sequences):
+def relay_to_geojson(legs, sequences=None, exchanges_data=None, exclude_exchanges=None):
+    if exclude_exchanges is None:
+        exclude_exchanges = set()
+    else:
+        exclude_exchanges = set(exclude_exchanges)
+
+    if sequences is None:
+        # Generate default sequential sequences in lexicographic order, excluding legs with excluded exchanges
+        filtered_legs = {pair: leg for pair, leg in legs.items() 
+                        if pair[0] not in exclude_exchanges and pair[1] not in exclude_exchanges}
+        sequences = {pair: [i] for i, pair in enumerate(reversed(sorted(filtered_legs.keys())))}
+
     features = []
     for leg in legs.values():
-        leg_without_coordinates = {k: v for k, v in leg.items() if k != "coordinates"}
+        # Skip legs that touch excluded exchanges
+        if leg["start_exchange"] in exclude_exchanges or leg["end_exchange"] in exclude_exchanges:
+            continue
+        leg_without_coordinates = {k: v for k, v in leg.items() if k not in ["coordinates", "pois"]}
         # Float props likely have too much precision. Round them to 2 decimal places
         for k, v in leg_without_coordinates.items():
             if isinstance(v, float):
@@ -69,32 +135,76 @@ def relay_to_geojson(legs, sequences):
         if exchange_pair not in sequences:
             # We must not be running this leg
             continue
-        leg_without_coordinates["sequences"] = sequences[exchange_pair]
+        leg_without_coordinates["sequence"] = sequences[exchange_pair]
         leg_feature = {"type": "Feature",
                        "properties": leg_without_coordinates,
                        "geometry": {"type": "LineString",
                                     "coordinates": list(map(flip_lat_long, leg["coordinates"]))}}
         features.append(leg_feature)
-    features = sorted(features, key=lambda x: x["properties"]["sequences"])
+
+        # Add POIs for this leg
+        for poi in leg.get("pois", []):
+            poi_properties = poi.copy()
+            poi_properties["leg_start_exchange"] = leg["start_exchange"]
+            poi_properties["leg_end_exchange"] = leg["end_exchange"]
+            poi_properties["leg_sequence"] = sequences[exchange_pair]
+            poi_properties["feature_type"] = "poi"
+            poi_properties["time"] = leg["time"]
+
+            # Round elevation if present
+            if "elevation" in poi_properties and isinstance(poi_properties["elevation"], float):
+                poi_properties["elevation"] = round(poi_properties["elevation"], 2)
+
+            poi_feature = {"type": "Feature",
+                          "properties": poi_properties,
+                          "geometry": {"type": "Point",
+                                      "coordinates": [poi["lon"], poi["lat"]]}}
+            features.append(poi_feature)
+    features = sorted(features, key=lambda x: x["properties"].get("sequence", x["properties"].get("leg_sequence", [999]))[0])
 
     # Pull exchanges implied by the legs
     exchanges = {}
-    for leg, coordinates in zip(map(lambda x: x["properties"], features), map(lambda x: x["geometry"]["coordinates"], features)):
-        exchanges[leg["start_exchange"]] = {"id": leg["start_exchange"],
-                                         "name":leg["start_name"],
-                                         "coordinates": coordinates[0]}
-        exchanges[leg["end_exchange"]] = {"id": leg["end_exchange"],
-                                       "name": leg["end_name"],
-                                       "coordinates": coordinates[-1]}
+    for feature in features:
+        leg = feature["properties"]
+        coordinates = feature["geometry"]["coordinates"]
+        # Only process LineString features (legs), not Points (POIs or exchanges)
+        if feature["geometry"]["type"] == "LineString" and "start_exchange" in leg:
+            start_id = leg["start_exchange"]
+            end_id = leg["end_exchange"]
+
+            # Use rich exchange data if available, otherwise use inferred data
+            if exchanges_data and start_id in exchanges_data:
+                exchanges[start_id] = exchanges_data[start_id].copy()
+            else:
+                exchanges[start_id] = {"id": start_id,
+                                     "name": leg["start_name"],
+                                     "coordinates": coordinates[0]}
+
+            if exchanges_data and end_id in exchanges_data:
+                exchanges[end_id] = exchanges_data[end_id].copy()
+            else:
+                exchanges[end_id] = {"id": end_id,
+                                   "name": leg["end_name"],
+                                   "coordinates": coordinates[-1]}
+
+    # Filter out excluded exchanges
+    for exchange_id in list(exchanges.keys()):
+        if exchange_id in exclude_exchanges:
+            del exchanges[exchange_id]
+
     for id, exchange in sorted(exchanges.items()):
         exchange_feature = {"type": "Feature",
                             "properties": {k: v for k, v in exchange.items() if k != "coordinates"},
                             "geometry": {"type": "Point",
                                          "coordinates": exchange["coordinates"]}}
         features.append(exchange_feature)
-    # Add a unique ID to each feature
-    for i, feature in enumerate(features):
-        feature["properties"]["id"] = i
+    # Add a unique ID to each feature, but preserve exchange IDs
+    feature_id = 0
+    for feature in features:
+        # Don't overwrite exchange IDs - they're meaningful station codes
+        if "id" not in feature["properties"]:
+            feature["properties"]["id"] = feature_id
+            feature_id += 1
     return {"type": "FeatureCollection",
             "features": features}
 
