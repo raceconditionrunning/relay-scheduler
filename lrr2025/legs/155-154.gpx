@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="https://onthegomap.com">
+  <metadata>
+    <name>SODO to Stadium</name>
+    <desc>Entirely on the SODO trail, a dedicated multi-use pathway that runs along the Link and the busway. Enjoy the SODO Track murals.</desc>
+    <copyright author="On The Go Map, OpenStreetMap Contributors">
+      <year>2025</year>
+    </copyright>
+    <link href="https://onthegomap.com">
+      <text>On The Go Map</text>
+    </link>
+    <time>2025-09-15T00:00:00Z</time>
+  </metadata>
+  <trk>
+    <name>0.86 mi route</name>
+    <trkseg>
+      <trkpt lat="47.58013" lon="-122.32733">
+        <ele>5.99</ele>
+      </trkpt>
+      <trkpt lat="47.58062" lon="-122.32733">
+        <ele>6.08</ele>
+      </trkpt>
+      <trkpt lat="47.58063" lon="-122.32721">
+        <ele>5.82</ele>
+      </trkpt>
+      <trkpt lat="47.58074" lon="-122.32725">
+        <ele>5.78</ele>
+      </trkpt>
+      <trkpt lat="47.58190" lon="-122.32725">
+        <ele>5.83</ele>
+      </trkpt>
+      <trkpt lat="47.58216" lon="-122.32732">
+        <ele>5.47</ele>
+      </trkpt>
+      <trkpt lat="47.58597" lon="-122.32732">
+        <ele>6.78</ele>
+      </trkpt>
+      <trkpt lat="47.58606" lon="-122.32729">
+        <ele>6.84</ele>
+      </trkpt>
+      <trkpt lat="47.58608" lon="-122.32729">
+        <ele>6.72</ele>
+      </trkpt>
+      <trkpt lat="47.58615" lon="-122.32729">
+        <ele>6.72</ele>
+      </trkpt>
+      <trkpt lat="47.58624" lon="-122.32729">
+        <ele>6.70</ele>
+      </trkpt>
+      <trkpt lat="47.58627" lon="-122.32729">
+        <ele>6.83</ele>
+      </trkpt>
+      <trkpt lat="47.58628" lon="-122.32730">
+        <ele>6.81</ele>
+      </trkpt>
+      <trkpt lat="47.58635" lon="-122.32732">
+        <ele>6.75</ele>
+      </trkpt>
+      <trkpt lat="47.58815" lon="-122.32731">
+        <ele>6.38</ele>
+      </trkpt>
+      <trkpt lat="47.58836" lon="-122.32728">
+        <ele>6.49</ele>
+      </trkpt>
+      <trkpt lat="47.58904" lon="-122.32711">
+        <ele>6.28</ele>
+      </trkpt>
+      <trkpt lat="47.58922" lon="-122.32707">
+        <ele>6.40</ele>
+      </trkpt>
+      <trkpt lat="47.58937" lon="-122.32706">
+        <ele>6.46</ele>
+      </trkpt>
+      <trkpt lat="47.59198" lon="-122.32705">
+        <ele>6.74</ele>
+      </trkpt>
+      <trkpt lat="47.59205" lon="-122.32705">
+        <ele>6.60</ele>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
