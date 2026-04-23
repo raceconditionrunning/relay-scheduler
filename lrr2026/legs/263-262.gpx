@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="https://onthegomap.com">
+  <metadata>
+    <name>Redmond Technology to Overlake Village</name>
+    <copyright author="On The Go Map, OpenStreetMap Contributors">
+      <year>2025</year>
+    </copyright>
+    <link href="https://onthegomap.com">
+      <text>On The Go Map</text>
+    </link>
+    <time>2025-08-31T00:00:00Z</time>
+  </metadata>
+  <trk>
+    <name>New file 3</name>
+    <trkseg>
+      <trkpt lat="47.64424" lon="-122.13338">
+        <ele>106.56</ele>
+      </trkpt>
+      <trkpt lat="47.64406" lon="-122.13334">
+        <ele>106.90</ele>
+      </trkpt>
+      <trkpt lat="47.64406" lon="-122.13335">
+        <ele>106.96</ele>
+      </trkpt>
+      <trkpt lat="47.64405" lon="-122.13341">
+        <ele>107.04</ele>
+      </trkpt>
+      <trkpt lat="47.64405" lon="-122.13345">
+        <ele>106.96</ele>
+      </trkpt>
+      <trkpt lat="47.64420" lon="-122.13348">
+        <ele>106.56</ele>
+      </trkpt>
+      <trkpt lat="47.64420" lon="-122.13351">
+        <ele>106.56</ele>
+      </trkpt>
+      <trkpt lat="47.64417" lon="-122.13350">
+        <ele>106.96</ele>
+      </trkpt>
+      <trkpt lat="47.64404" lon="-122.13348">
+        <ele>107.16</ele>
+      </trkpt>
+      <trkpt lat="47.64404" lon="-122.13352">
+        <ele>106.96</ele>
+      </trkpt>
+      <trkpt lat="47.64403" lon="-122.13363">
+        <ele>108.52</ele>
+      </trkpt>
+      <trkpt lat="47.64402" lon="-122.13363">
+        <ele>108.52</ele>
+      </trkpt>
+      <trkpt lat="47.64403" lon="-122.13363">
+        <ele>108.52</ele>
+      </trkpt>
+      <trkpt lat="47.64398" lon="-122.13363">
+        <ele>108.52</ele>
+      </trkpt>
+      <trkpt lat="47.64384" lon="-122.13360">
+        <ele>107.24</ele>
+      </trkpt>
+      <trkpt lat="47.64312" lon="-122.13368">
+        <ele>108.87</ele>
+      </trkpt>
+      <trkpt lat="47.64306" lon="-122.13368">
+        <ele>108.66</ele>
+      </trkpt>
+      <trkpt lat="47.64387" lon="-122.13483">
+        <ele>108.04</ele>
+      </trkpt>
+      <trkpt lat="47.64387" lon="-122.13510">
+        <ele>111.97</ele>
+      </trkpt>
+      <trkpt lat="47.64404" lon="-122.13516">
+        <ele>112.39</ele>
+      </trkpt>
+      <trkpt lat="47.64407" lon="-122.13513">
+        <ele>111.59</ele>
+      </trkpt>
+      <trkpt lat="47.64407" lon="-122.13506">
+        <ele>111.59</ele>
+      </trkpt>
+      <trkpt lat="47.64408" lon="-122.13499">
+        <ele>107.14</ele>
+      </trkpt>
+      <trkpt lat="47.64408" lon="-122.13492">
+        <ele>112.31</ele>
+      </trkpt>
+      <trkpt lat="47.64392" lon="-122.13488">
+        <ele>107.14</ele>
+      </trkpt>
+      <trkpt lat="47.64387" lon="-122.13489">
+        <ele>110.81</ele>
+      </trkpt>
+      <trkpt lat="47.64350" lon="-122.13483">
+        <ele>108.48</ele>
+      </trkpt>
+      <trkpt lat="47.64326" lon="-122.13481">
+        <ele>109.06</ele>
+      </trkpt>
+      <trkpt lat="47.64265" lon="-122.13481">
+        <ele>110.36</ele>
+      </trkpt>
+      <trkpt lat="47.64219" lon="-122.13486">
+        <ele>108.78</ele>
+      </trkpt>
+      <trkpt lat="47.64157" lon="-122.13501">
+        <ele>107.19</ele>
+      </trkpt>
+      <trkpt lat="47.64121" lon="-122.13514">
+        <ele>110.47</ele>
+      </trkpt>
+      <trkpt lat="47.64090" lon="-122.13529">
+        <ele>107.91</ele>
+      </trkpt>
+      <trkpt lat="47.64027" lon="-122.13564">
+        <ele>108.31</ele>
+      </trkpt>
+      <trkpt lat="47.63992" lon="-122.13587">
+        <ele>108.87</ele>
+      </trkpt>
+      <trkpt lat="47.63948" lon="-122.13619">
+        <ele>109.05</ele>
+      </trkpt>
+      <trkpt lat="47.63903" lon="-122.13656">
+        <ele>107.03</ele>
+      </trkpt>
+      <trkpt lat="47.63890" lon="-122.13667">
+        <ele>106.51</ele>
+      </trkpt>
+      <trkpt lat="47.63877" lon="-122.13681">
+        <ele>106.51</ele>
+      </trkpt>
+      <trkpt lat="47.63852" lon="-122.13713">
+        <ele>105.71</ele>
+      </trkpt>
+      <trkpt lat="47.63831" lon="-122.13736">
+        <ele>104.98</ele>
+      </trkpt>
+      <trkpt lat="47.63810" lon="-122.13761">
+        <ele>106.44</ele>
+      </trkpt>
+      <trkpt lat="47.63800" lon="-122.13775">
+        <ele>104.64</ele>
+      </trkpt>
+      <trkpt lat="47.63780" lon="-122.13807">
+        <ele>106.34</ele>
+      </trkpt>
+      <trkpt lat="47.63774" lon="-122.13819">
+        <ele>105.76</ele>
+      </trkpt>
+      <trkpt lat="47.63765" lon="-122.13838">
+        <ele>107.21</ele>
+      </trkpt>
+      <trkpt lat="47.63756" lon="-122.13857">
+        <ele>107.89</ele>
+      </trkpt>
+      <trkpt lat="47.63754" lon="-122.13861">
+        <ele>107.88</ele>
+      </trkpt>
+      <trkpt lat="47.63753" lon="-122.13859">
+        <ele>107.08</ele>
+      </trkpt>
+      <trkpt lat="47.63751" lon="-122.13856">
+        <ele>108.01</ele>
+      </trkpt>
+      <trkpt lat="47.63748" lon="-122.13851">
+        <ele>104.83</ele>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
